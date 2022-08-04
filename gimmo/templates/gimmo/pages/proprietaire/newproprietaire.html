@@ -1,0 +1,422 @@
+{% extends 'gimmo/base.html' %}{% load i18n %} {% load static %}
+{% block css %}
+<link rel="stylesheet" href="{% static '/gimmo/css/modal.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/form.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/responsivebox.css' %}">
+{% endblock css %}
+{% block title %}{% trans "NOUVEAU PROPRIETAIRE" %}{% endblock title %}
+{% block content %}
+<main>
+    <h1>{% trans "Nouveau propriétaire" %}</h1>
+
+    <div class="list-btn">
+        <a href="{% url 'proprietaire' %}" class="a-button" style="--clr:#7380ec;">
+            <span class="material-icons-sharp">
+                reply
+            </span>
+            {% trans "Retour liste propriétaire" %}
+        </a>
+    </div>
+    <!--CARD-->
+    <!--END CARD-->
+    <!--TABLE-->
+    <div class="main-body">
+        <form action="{% url 'ajxpro' %}" method="post" id="newform" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="l-card">
+                <div class="card lg-c3 md-c12 sm-c12 xs-c12">
+                    <div class="card-header">
+                        <h2>{% trans "Identification" %}</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="drop-zone" style="cursor: pointer;">
+                            <span class="drop-zone__prompti"><i class="material-icons-sharp" style="font-size: 70px;">person</i></span><br/>
+                            <span class="drop-zone__prompt">{% trans 'Glisez ou cliquez pour ajouter' %}</span>
+                            <input type="file" name="profile" class="drop-zone__input" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+                <div class="card lg-c6 md-c12 sm-c12 xs-c12">
+                    <div class="card-header">
+                        <h2>
+                            {% trans "Information" %}
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="lg-c6 md-c6 sm-c6 xs-c12">
+                                <div class="select_div">
+                                    <div class="select_label">{% trans "Civilité" %} <span class="required-txt" style="color: red;">*</span></div>
+                                    <select name="civilite" id="select_field" class="select_field" required>
+                                        <option>---</option>
+                                        <option value="Monsieur">{% trans "Monsieur" %}</option>
+                                        <option value="Madame">{% trans "Madame" %}</option>
+                                        <option value="Mademoiselle">{% trans "Mademoiselle" %}</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="lg-c6 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="text" class="input_field" name="nom" id="input_feild" placeholder=" " required>
+                                    <label for="input_feild" class="input_label">{% trans "Nom" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+    
+                            <div class="lg-c6 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="text" class="input_field" name="prenoms" id="input_feild" placeholder=" " required>
+                                    <label for="input_feild" class="input_label">{% trans "Prénoms" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+
+                            <div class="lg-c6 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="date" class="input_field" id="input_feild" name="daten" placeholder=" " required>
+                                    <label for="input_feild" class="input_label">{% trans "Date de naissance" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+
+                            <div class="lg-c6 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="text" class="input_field" id="input_feild" name="profession"
+                                        placeholder=" " required>
+                                    <label for="input_feild" class="input_label">{% trans "Profession" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+
+                            <div class="lg-c6 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="text" class="input_field" id="input_feild" name="lieutaf" placeholder=" ">
+                                    <label for="input_feild" class="input_label">{% trans "Lieu de travail" %}</label>
+                                </div>
+                            </div>
+
+                            <div class="lg-c6 md-c6 sm-c6 xs-c12">
+                                <div class="select_div">
+                                    <div class="select_label">{% trans "Nature de la pièce" %}</div>
+                                    <select name="naturepiece" id="select_field" class="select_field">
+                                        <option>---</option>
+                                        <option value="CNI">{% trans "CNI" %}</option>
+                                        <option value="Passeport">{% trans "Passeport" %}</option>
+                                        <option value="ONI">{% trans "ONI" %}</option>
+                                        <option value="Permis de conduire">{% trans "Permis de conduire" %}</option>
+                                        <option value="Carte consulaire">{% trans "Carte consulaire" %}</option>
+                                        <option value="Autre">{% trans "Autre" %}</option>
+                                    </select>
+                                </div>
+                            </div>
+    
+                            <div class="lg-c6 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="text" class="input_field" id="input_feild" name="numpiece" placeholder=" ">
+                                    <label for="input_feild" class="input_label">{% trans "Numéro de la pièce" %}</label>
+                                </div>
+                            </div>
+    
+    
+                            <div class="lg-c6 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="text" class="input_field" id="input_feild" name="lpiece" placeholder=" ">
+                                    <label for="input_feild" class="input_label">{% trans "Lieu de délivrance" %}</label>
+                                </div>
+                            </div>
+    
+    
+                            <div class="lg-c6 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="date" class="input_field" id="input_feild" name="dpiece" placeholder=" ">
+                                    <label for="input_feild" class="input_label">{% trans "Date délivrance" %}</label>
+                                </div>
+                            </div>
+
+                            <div class="lg-c6 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="date" class="input_field" id="input_feild" name="epiece" placeholder=" ">
+                                    <label for="input_feild" class="input_label">{% trans "Date d'expiration" %}</label>
+                                </div>
+                            </div>
+
+                            <div class="lg-c6 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="text" class="input_field" name="adresse" id="input_feild" placeholder=" " required>
+                                    <label for="input_feild" class="input_label">{% trans "Adresse" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+                            <div class="lg-c6 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="text" class="input_field" id="input_feild" name="ville" placeholder=" " required>
+                                    <label for="input_feild" class="input_label">{% trans "Ville" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+                            <div class="lg-c6 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="text" class="input_field" id="input_feild" name="quartier" placeholder=" " required>
+                                    <label for="input_feild" class="input_label">{% trans "Quartier" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+    
+    
+                            <div class="lg-c6 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="text" class="input_field" id="input_feild" name="telfixe" placeholder=" ">
+                                    <label for="input_feild" class="input_label">{% trans "Téléphone fixe" %}</label>
+                                </div>
+                            </div>
+    
+                            <div class="lg-c6 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="text" class="input_field" id="input_feild" name="tel" placeholder=" " required>
+                                    <label for="input_feild" class="input_label">{% trans "Téléphone" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+                            <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                                <h3>
+                                    {% trans "Personne à contacter en cas d'urgence" %}
+                                </h3>
+                            </div>
+                            <div class="lg-c6 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="text" class="input_field" id="input_feild" name="nomu" placeholder=" " required>
+                                    <label for="input_feild" class="input_label">{% trans "Nom" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+    
+                            <div class="lg-c6 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="text" class="input_field" id="input_feild" name="prenomsu" placeholder=" " required>
+                                    <label for="input_feild" class="input_label">{% trans "Prénoms" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+    
+                            <div class="lg-c6 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="text" class="input_field" id="input_feild" name="contactu" placeholder=" " required>
+                                    <label for="input_feild" class="input_label">{% trans "Contact" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card lg-c3 md-c12 sm-c12 xs-c12">
+                    <div class="card-header">
+                        <h2>
+                            {% trans "Connexion" %}
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                                <div class="input_div">
+                                    <input type="text" class="input_field" id="pseudo" name="pseudo" placeholder=" " required readonly value="{{ matricule }}" style="cursor:not-allowed;">
+                                    <label for="pseudo" class="input_label">{% trans "Nom d'utilisateur" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+    
+                            <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                                <div class="input_div">
+                                    <input type="text" class="input_field" id="input_feild" name="mdp" placeholder=" " required>
+                                    <label for="input_feild" class="input_label">{% trans "Mot de passe" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+    
+                            <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                                <div class="input_div">
+                                    <input type="text" class="input_field" id="input_feild" name="email" placeholder=" " required>
+                                    <label for="input_feild" class="input_label">{% trans "Email" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-btn">
+                            <button type="reset" class="a-button" style="--clr:#e91919;">
+                                {% trans "Annuler" %}
+                            </button>
+                            <button type="submit" class="a-button" style="--clr:#7380ec;">
+                                {% trans "Enrégistrer" %}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!--END TABLE-->
+</main>
+{% endblock content %}
+{% block js %}
+<div class="modal md-modal" id="modal-hs">
+    <div class="content">
+        <div class="modal-header">
+            <div class="title">Exemple</div>
+            <div class="close" onclick="showModal('showmodal1');">
+                <span class="material-icons-sharp">
+                    close
+                </span>
+            </div>
+        </div>
+        <div class="modal-body">
+            exempla de p;ldfjkfd dejdjd djjudf dhjdj
+            Many users already have downloaded jQuery from Google when visiting another site. As a result, it will be
+            loaded from cache when they visit your site, which leads to faster loading time. Also, most CDN's will make
+            sure that once a user requests a file from it, it will be served from the server closest to them, which also
+            leads to faster loading time.
+        </div>
+        <div class="modal-footer">
+            <div class="list-btn">
+                <button class="a-button" style="--clr:#7380ec;">
+                    {% trans "Enrégistrer" %}
+                </button>
+                <button type="button" onclick="showModal('showmodal1');" class="a-button" style="--clr:#e91919;">
+                    {% trans "Annuler" %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#table_id').DataTable();
+    });
+</script>
+<script>
+    $("#newform").submit(function(e){
+        e.preventDefault();
+        swal({
+            title: "{% trans 'En cours' %} !",
+            text: "{% trans 'Veuillez ne pas quitter la page' %}",
+            type: "warning",
+            showCancelButton: false,
+            showConfirmButton : false,
+            confirmButtonColor: "#00BCD4",
+            confirmButtonText: "oK",
+            cancelButtonText: "No, cancel plx!",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        });
+        var formData = new FormData(this);
+        $.ajax({
+            type : "POST",
+            url: $(this).attr("action"),
+            data: formData,
+            dataType: 'json',
+            success: function(data) {                
+                if (data.etat == "2") {
+                    var textreturn = "{% trans 'Propriétaire déjà enrégistré' %}";
+                    swal({
+                        title: "{% trans 'Erreur' %} !",
+                        text: textreturn,
+                        type: "error",
+                        showCancelButton: false,
+                        confirmButtonColor: "#7380ec",
+                        confirmButtonText: "oK",
+                        cancelButtonText: "No, cancel plx!",
+                        closeOnConfirm: true,
+                        closeOnCancel: true
+                    });
+                }else{
+                    
+                    var textreturn = "{% trans 'Propriétaire enrégistré' %}";
+                    swal({
+                        title: "{% trans 'Succès' %} !",
+                        text: textreturn,
+                        type: "success",
+                        showCancelButton: false,
+                        confirmButtonColor: "#7380ec",
+                        confirmButtonText: "oK",
+                        cancelButtonText: "No, cancel plx!",
+                        closeOnConfirm: true,
+                        closeOnCancel: false
+                    }, function (isConfirm) {
+                        if (isConfirm) {
+                            $("#newform").trigger("reset");
+                            $('#pseudo').val(data.matricule);
+                        }
+                    });
+                }
+                
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        });
+    });
+</script>
+
+<script>
+    document.querySelectorAll(".drop-zone__input").forEach((inputElement) => {
+        const dropZoneElement = inputElement.closest(".drop-zone");
+
+        dropZoneElement.addEventListener("click", (e) => {
+            inputElement.click();
+        });
+
+        inputElement.addEventListener("change", (e) => {
+            if (inputElement.files.length) {
+                updateThumbnail(dropZoneElement, inputElement.files[0]);
+            }
+        });
+
+        dropZoneElement.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            dropZoneElement.classList.add("drop-zone--over");
+        });
+
+        ["dragleave", "dragend"].forEach((type) => {
+            dropZoneElement.addEventListener(type, (e) => {
+                dropZoneElement.classList.remove("drop-zone--over");
+            });
+        });
+
+        dropZoneElement.addEventListener("drop", (e) => {
+            e.preventDefault();
+
+            if (e.dataTransfer.files.length) {
+                inputElement.files = e.dataTransfer.files;
+                updateThumbnail(dropZoneElement, e.dataTransfer.files[0]);
+            }
+
+            dropZoneElement.classList.remove("drop-zone--over");
+        });
+    });
+
+    /**
+     * Updates the thumbnail on a drop zone element.
+     *
+     * @param {HTMLElement} dropZoneElement
+     * @param {File} file
+     */
+    function updateThumbnail(dropZoneElement, file) {
+        let thumbnailElement = dropZoneElement.querySelector(".drop-zone__thumb");
+
+        // First time - remove the prompt
+        if (dropZoneElement.querySelector(".drop-zone__prompt")) {
+            dropZoneElement.querySelector(".drop-zone__prompt").remove();
+        }
+        if (dropZoneElement.querySelector(".drop-zone__prompti")) {
+            dropZoneElement.querySelector(".drop-zone__prompti").remove();
+        }
+
+        // First time - there is no thumbnail element, so lets create it
+        if (!thumbnailElement) {
+            thumbnailElement = document.createElement("div");
+            thumbnailElement.classList.add("drop-zone__thumb");
+            dropZoneElement.appendChild(thumbnailElement);
+        }
+
+        thumbnailElement.dataset.label = file.name;
+
+        // Show thumbnail for image files
+        if (file.type.startsWith("image/")) {
+            const reader = new FileReader();
+
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                thumbnailElement.style.backgroundImage = `url('${reader.result}')`;
+            };
+        } else {
+            thumbnailElement.style.backgroundImage = null;
+        }
+    }
+</script>
+{% endblock js %}

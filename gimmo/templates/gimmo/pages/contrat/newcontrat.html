@@ -1,0 +1,574 @@
+{% extends 'gimmo/base.html' %}{% load i18n %} {% load static %} {% load ghis %}
+{% block css %}
+<link rel="stylesheet" href="{% static '/gimmo/css/modal.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/form.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/responsivebox.css' %}">
+{% endblock css %}
+{% block title %}{% trans "NOUVEAU CONTRAT" %}{% endblock title %}
+{% block content %}
+<main>
+    <h1>{% trans "Nouveau contrat" %}</h1>
+
+    <div class="list-btn">
+        <a href="{% url 'contrat' %}" class="a-button" style="--clr:#7380ec;">
+            <span class="material-icons-sharp">
+                reply
+            </span>
+            {% trans "Retour liste des contrats" %}
+        </a>
+    </div>
+    <!--CARD-->
+    <!--END CARD-->
+    <!--TABLE-->
+    <div class="main-body">
+        <form action="{% url 'ajxcontrat' %}" method="post" id="newform" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="l-card">
+                <div class="card lg-c3 md-c12 sm-c12 xs-c12">
+                    <div class="card-header">
+                        <h2>{% trans "Concernés" %}</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                                <h3>Propriétaire</h3><br>
+                            </div>
+                            <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                                <div class="select_div">
+                                    <div class="select_label">{% trans "Propriétaire" %} <span class="required-txt" style="color: red;">*</span></div>
+                                    <select name="proprietaire" id="proprietaire" class="select_field" required>
+                                        <option></option>
+                                        {% for un_proprietaire in liste_proprietaire %}
+                                          <option value="{{un_proprietaire.id}}">{{un_proprietaire.nom|upper}} {{ un_proprietaire.prenom }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                                <div class="select_div">
+                                    <div class="select_label">{% trans "Bien" %} <span class="required-txt" style="color: red;">*</span></div>
+                                    <select name="bien" id="bien" class="select_field" required>
+                                        <option class="after"></option>
+                                        <option value="1">{% trans "Oui" %}</option>
+                                        <option value="2">{% trans "Non" %}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                                <div class="select_div">
+                                    <div class="select_label">{% trans "Locative" %} <span class="required-txt" style="color: red;">*</span></div>
+                                    <select name="locative" id="locative" class="select_field" required>
+                                        <option class="afterr"></option>
+                                        <option value="1">{% trans "Oui" %}</option>
+                                        <option value="2">{% trans "Non" %}</option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                                <h3>Locataire</h3><br>
+                            </div>
+                            <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                                <div class="select_div">
+                                    <div class="select_label">{% trans "Locataire" %} <span class="required-txt" style="color: red;">*</span></div>
+                                    <select name="locataire" id="select_field" class="select_field" required>
+                                        <option></option>
+                                        {% for un_locataire in liste_locataire %}
+                                          <option value="{{un_locataire.id}}">{{un_locataire.nom|upper}} {{ un_locataire.prenom }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div class="card lg-c9 md-c12 sm-c12 xs-c12">
+                    <div class="card-header">
+                        <h2>
+                            {% trans "Eléments liés au contrat" %}
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                                <h3>Locataire</h3><br>
+                            </div>
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="select_div">
+                                    <div class="select_label">{% trans "Type de contrat" %} <span class="required-txt" style="color: red;">*</span></div>
+                                    <select name="typecontrat" id="select_field" class="select_field" required>
+                                        <option></option>
+                                        <option value="1">{% trans "Contrat de bail habitation" %}</option>
+                                        <option value="2">{% trans "Contrat de bail commercial" %}</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" name="caution" id="input_feild" placeholder=" " required>
+                                    <label for="input_feild" class="input_label">{% trans "Loyer caution" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" name="avance" id="input_feild" placeholder=" " required>
+                                    <label for="input_feild" class="input_label">{% trans "Loyer avance" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+
+                            <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                                <div class="input_div">
+                                    <input type="text" class="input_field" id="valeurlocative" value="0" placeholder=" " readonly style="cursor: not-allowed;text-align: center;font-weight: 600;color: #7380ec;border: 1px solid #7380ec;">
+                                    <label for="input_feild" class="input_label" style="color: #7380ec;">{% trans "Valeur locative" %}</label>
+                                </div>
+                            </div>
+    
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="date" class="input_field" name="datesign" id="input_feild" placeholder=" " required>
+                                    <label for="input_feild" class="input_label">{% trans "Date signature" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="date" class="input_field" id="input_feild" name="dateentree" placeholder=" " required>
+                                    <label for="input_feild" class="input_label">{% trans "Date début" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="date" class="input_field" id="input_feild" name="datefin" placeholder=" ">
+                                    <label for="input_feild" class="input_label">{% trans "Date fin" %}</label>
+                                </div>
+                            </div>
+
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" id="input_feild" name="retard"
+                                        placeholder=" " required>
+                                    <label for="input_feild" class="input_label">{% trans "Pourcentage à imputer en cas de retard" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" id="input_feild" name="limite"
+                                        placeholder=" " required min="0" value="1">
+                                    <label for="input_feild" class="input_label">{% trans "Jour ajouté à la date de paiement" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" id="input_feild" name="nbpaiement"
+                                        placeholder=" " required min="1" value="1">
+                                    <label for="input_feild" class="input_label">{% trans "Débuté le paiement après" %} (Mois) <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+
+                            <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                                <h3>Propriétaire & Agence</h3><br>
+                            </div>
+                            <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                                <h4>Visite du site</h4><br>
+                            </div>
+                            <div class="lg-c3 md-c4 sm-c12 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" id="visitemtt" name="visitemtt"
+                                        placeholder=" " required min="0" value="{{un_etablissement.visitemtt|strtoint}}" readonly style="cursor: not-allowed;">
+                                    <label for="visitemtt" class="input_label">{% trans "Montant" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+                            <div class="lg-c3 md-c4 sm-c12 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" id="visiteqte" name="visiteqte"
+                                        placeholder=" " required min="0" value="0" onkeyup="getTotal('visite')">
+                                    <label for="visiteqte" class="input_label">{% trans "Qté" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+                            <div class="lg-c3 md-c4 sm-c12 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" id="visitetva" name="visitetva"
+                                        placeholder=" " required min="0" value="{{un_etablissement.tva|strtoint}}" readonly style="cursor: not-allowed;">
+                                    <label for="visitetva" class="input_label">{% trans "TVA" %}(%) <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+                            <div class="lg-c3 md-c4 sm-c12 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" id="visitetot" name="visitetot"
+                                        placeholder=" " required min="0" value="0" readonly style="cursor: not-allowed;">
+                                    <label for="visitetot" class="input_label">{% trans "Total" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+                            <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                                <h4>Honoraire</h4><br>
+                            </div>
+                            <div class="lg-c3 md-c4 sm-c12 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" id="honorairemtt" name="honorairemtt"
+                                        placeholder=" " required min="0" value="{{un_etablissement.honorairemtt|strtoint}}" readonly style="cursor: not-allowed;">
+                                    <label for="honorairemtt" class="input_label">{% trans "Montant" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+                            <div class="lg-c3 md-c4 sm-c12 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" id="honoraireqte" name="honoraireqte"
+                                        placeholder=" " required min="0" value="0" onkeyup="getTotal('honoraire')">
+                                    <label for="honoraireqte" class="input_label">{% trans "Qté" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+                            <div class="lg-c3 md-c4 sm-c12 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" id="honorairetva" name="honorairetva"
+                                        placeholder=" " required min="0" value="{{un_etablissement.tva|strtoint}}" readonly style="cursor: not-allowed;">
+                                    <label for="honorairetva" class="input_label">{% trans "TVA" %}(%) <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+                            <div class="lg-c3 md-c4 sm-c12 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" id="honorairetot" name="honorairetot"
+                                        placeholder=" " required min="0" value="0" readonly style="cursor: not-allowed;">
+                                    <label for="honorairetot" class="input_label">{% trans "Total" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+                            <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                                <h4>Droit d'enrégistrement</h4><br>
+                            </div>
+                            <div class="lg-c3 md-c4 sm-c12 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" id="droitmtt" name="droitmtt"
+                                        placeholder=" " required min="0" value="{{un_etablissement.droitmtt|strtoint}}" readonly style="cursor: not-allowed;">
+                                    <label for="droitmtt" class="input_label">{% trans "Montant" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+                            <div class="lg-c3 md-c4 sm-c12 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" id="droitqte" name="droitqte"
+                                        placeholder=" " required min="0" value="0" onkeyup="getTotal('droit')">
+                                    <label for="droitqte" class="input_label">{% trans "Qté" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+                            <div class="lg-c3 md-c4 sm-c12 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" id="droittva" name="droittva"
+                                        placeholder=" " required min="0" value="{{un_etablissement.tva|strtoint}}" readonly style="cursor: not-allowed;">
+                                    <label for="droittva" class="input_label">{% trans "TVA" %}(%) <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+                            <div class="lg-c3 md-c4 sm-c12 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" id="droittot" name="droittot"
+                                        placeholder=" " required min="0" value="0" readonly style="cursor: not-allowed;">
+                                    <label for="droittot" class="input_label">{% trans "Total" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+                            <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                                <h4>Timbres fiscaux + transport</h4><br>
+                            </div>
+                            <div class="lg-c3 md-c4 sm-c12 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" id="timbremtt" name="timbremtt"
+                                        placeholder=" " required min="0" value="{{un_etablissement.timbremtt|strtoint}}" readonly style="cursor: not-allowed;">
+                                    <label for="timbremtt" class="input_label">{% trans "Montant" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+                            <div class="lg-c3 md-c4 sm-c12 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" id="timbreqte" name="timbreqte"
+                                        placeholder=" " required min="0" value="0" onkeyup="getTotal('timbre')">
+                                    <label for="timbreqte" class="input_label">{% trans "Qté" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+                            <div class="lg-c3 md-c4 sm-c12 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" id="timbretva" name="timbretva"
+                                        placeholder=" " required min="0" value="{{un_etablissement.tva|strtoint}}" readonly style="cursor: not-allowed;">
+                                    <label for="timbretva" class="input_label">{% trans "TVA" %}(%) <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+                            <div class="lg-c3 md-c4 sm-c12 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" id="timbretot" name="timbretot"
+                                        placeholder=" " required min="0" value="0" readonly style="cursor: not-allowed;">
+                                    <label for="timbretot" class="input_label">{% trans "Total" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+                            <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                                <h4>Frais de dossier</h4><br>
+                            </div>
+                            <div class="lg-c3 md-c4 sm-c12 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" id="fraisdossiermtt" name="fraisdossiermtt"
+                                        placeholder=" " required min="0" value="{{un_etablissement.fraisdossiermtt|strtoint}}" readonly style="cursor: not-allowed;">
+                                    <label for="fraisdossiermtt" class="input_label">{% trans "Montant" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+                            <div class="lg-c3 md-c4 sm-c12 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" id="fraisdossierqte" name="fraisdossierqte"
+                                        placeholder=" " required min="0" value="0" onkeyup="getTotal('fraisdossier')">
+                                    <label for="fraisdossierqte" class="input_label">{% trans "Qté" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+                            <div class="lg-c3 md-c4 sm-c12 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" id="fraisdossiertva" name="fraisdossiertva"
+                                        placeholder=" " required min="0" value="{{un_etablissement.tva|strtoint}}" readonly style="cursor: not-allowed;">
+                                    <label for="fraisdossiertva" class="input_label">{% trans "TVA" %}(%) <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+                            <div class="lg-c3 md-c4 sm-c12 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" id="fraisdossiertot" name="fraisdossiertot"
+                                        placeholder=" " required min="0" value="0" readonly style="cursor: not-allowed;">
+                                    <label for="fraisdossiertot" class="input_label">{% trans "Total" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+                            <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                                <h4>Frais d'assurance</h4><br>
+                            </div>
+                            <div class="lg-c3 md-c4 sm-c12 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" id="assurancemtt" name="assurancemtt"
+                                        placeholder=" " required min="0" value="{{un_etablissement.assurancemtt|strtoint}}" readonly style="cursor: not-allowed;">
+                                    <label for="assurancemtt" class="input_label">{% trans "Montant" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+                            <div class="lg-c3 md-c4 sm-c12 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" id="assuranceqte" name="assuranceqte"
+                                        placeholder=" " required min="0" value="0" onkeyup="getTotal('assurance')">
+                                    <label for="assuranceqte" class="input_label">{% trans "Qté" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+                            <div class="lg-c3 md-c4 sm-c12 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" id="assurancetva" name="assurancetva"
+                                        placeholder=" " required min="0" value="{{un_etablissement.tva|strtoint}}" readonly style="cursor: not-allowed;">
+                                    <label for="assurancetva" class="input_label">{% trans "TVA" %}(%) <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+                            <div class="lg-c3 md-c4 sm-c12 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" id="assurancetot" name="assurancetot"
+                                        placeholder=" " required min="0" value="0" readonly style="cursor: not-allowed;">
+                                    <label for="assurancetot" class="input_label">{% trans "Total" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+                            <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                                <div class="input_div flex-b">
+                                    <input type="checkbox" name="activecontrat" id="activecontrat" class="check_field" value="1">
+                                    <label for="activecontrat" class="">{% trans "Activer contrat" %}</label>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="list-btn">
+                            <button type="reset" class="a-button" style="--clr:#e91919;">
+                                {% trans "Annuler" %}
+                            </button>
+                            <button type="submit" class="a-button" style="--clr:#7380ec;">
+                                {% trans "Enrégistrer" %}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!--END TABLE-->
+</main>
+{% endblock content %}
+{% block js %}
+<script>
+    function getTotal(concern){
+        var montant = $('#'+concern+'mtt').val();
+        var qte = $('#'+concern+'qte').val();
+        var tva = $('#'+concern+'tva').val();
+        var tot = $('#'+concern+'tot');
+        total = qte*montant;
+        tva_tot = qte*montant*(tva/100);
+        total = total + tva_tot;
+        tot.val(total);
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        $('#table_id').DataTable();
+    });
+</script>
+<script>
+    $("#newform").submit(function(e){
+        e.preventDefault();
+        swal({
+            title: "{% trans 'En cours' %} !",
+            text: "{% trans 'Veuillez ne pas quitter la page' %}",
+            type: "warning",
+            showCancelButton: false,
+            showConfirmButton : false,
+            confirmButtonColor: "#00BCD4",
+            confirmButtonText: "oK",
+            cancelButtonText: "No, cancel plx!",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        });
+        var formData = new FormData(this);
+        $.ajax({
+            type : "POST",
+            url: $(this).attr("action"),
+            data: formData,
+            dataType: 'json',
+            success: function(data) {                
+                if (data.etat == "2") {
+                    var textreturn = "{% trans 'Contrat déjà enrégistré' %}";
+                    swal({
+                        title: "{% trans 'Erreur' %} !",
+                        text: textreturn,
+                        type: "error",
+                        showCancelButton: false,
+                        confirmButtonColor: "#7380ec",
+                        confirmButtonText: "oK",
+                        cancelButtonText: "No, cancel plx!",
+                        closeOnConfirm: true,
+                        closeOnCancel: true
+                    });
+                }else{
+                    
+                    var textreturn = "{% trans 'Contrat enrégistré' %}";
+                    swal({
+                        title: "{% trans 'Succès' %} !",
+                        text: textreturn,
+                        type: "success",
+                        showCancelButton: false,
+                        confirmButtonColor: "#7380ec",
+                        confirmButtonText: "oK",
+                        cancelButtonText: "No, cancel plx!",
+                        closeOnConfirm: true,
+                        closeOnCancel: false
+                    }, function (isConfirm) {
+                        if (isConfirm) {
+                            location.reload();
+                        }
+                    });
+                }
+                
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+            $("#sscatone").hide();
+            $("#sscattwo").hide();
+            $("#proprietaire").on('change', function () {
+                var $this = $(this);
+                if ($this.val() != '') {
+                    $("#bien").find('.after').nextAll().remove();
+                    $("#valeurlocative").val('0');
+                    $.ajax({
+                        url: "{% url 'bienproprietaire' %}",
+                        data: {
+                            'id': $(this).val()
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.textdisplay == 0) {
+                                $("#bien").find('.after').nextAll().remove();
+                                $("#locative").val("");
+                            } else {
+                                $("#bien").find('.after').nextAll().remove();
+                                let options = '';
+                                data.listebien.forEach(bien => {
+                                    options += '<option value=' + bien.id + '>' + bien.nom + '</option>';
+                                });
+
+                                $("#locative").val("");
+                                $("#bien").find('.after').after(options);
+                            }
+
+                        },
+                        error: function (data) {
+                            console.log('Something went wrong');
+                        }
+                    });
+                } else {
+                    $("#bien").find('.after').nextAll().remove();
+                }
+            });
+
+            $("#bien").on('change', function () {
+                var $this = $(this);
+                if ($this.val() != '') {
+                    $("#locative").find('.after').nextAll().remove();
+                    $("#valeurlocative").val('0');
+                    $.ajax({
+                        url: "{% url 'locativeproprietaire' %}",
+                        data: {
+                            'id': $(this).val()
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.textdisplay == 0) {
+                                $("#locative").find('.afterr').nextAll().remove();
+                            } else {
+                                $("#locative").find('.afterr').nextAll().remove();
+                                let options = '';
+                                data.listelocative.forEach(locative => {
+                                    if (locative.etat == 2){
+                                        etat_loc = 'En location';
+                                    }else if(locative.etat == 3){
+                                        etat_loc = 'Réservée';
+                                    }else{
+                                        etat_loc = 'Libre';
+                                    }
+
+                                    if(etat_loc == 'Libre'){
+                                        options += '<option value=' + locative.id + '>' + locative.reflocative +' ('+etat_loc+ ')</option>';
+                                    }else{
+                                        options += '<option disabled value=' + locative.id + '>' + locative.reflocative +' ('+etat_loc+ ')</option>';
+                                    }
+                                });
+                                $("#locative").find('.afterr').after(options);
+                            }
+
+                        },
+                        error: function (data) {
+                            console.log('Something went wrong');
+                        }
+                    });
+                } else {
+                    $("#locative").find('.after').nextAll().remove();
+                }
+            });
+
+            $("#locative").on('change', function () {
+                var $this = $(this);
+                if ($this.val() != '') {
+                    $.ajax({
+                        url: "{% url 'selectedlocative' %}",
+                        data: {
+                            'id': $(this).val()
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data) {
+                                $("#valeurlocative").val(data.montant);
+                            }
+
+                        },
+                        error: function (data) {
+                            console.log('Something went wrong');
+                        }
+                    });
+                } else {
+                    $("#valeurlocative").val('0');
+                }
+            });
+        });
+ </script>
+{% endblock js %}

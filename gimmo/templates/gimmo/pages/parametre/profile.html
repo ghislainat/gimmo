@@ -1,0 +1,145 @@
+{% extends 'gimmo/base.html' %}{% load i18n %} {% load static %} {% load ghis %}
+{% block css %}
+<link rel="stylesheet" href="{% static '/gimmo/css/modal.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/form.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/responsivebox.css' %}">
+{% endblock css %}
+{% block title %}{% trans "PARAMETRE" %}{% endblock title %}
+{% block content %}
+<main>
+    <h1>{% trans "Paramètre" %}</h1>
+    <div class="list-btn">
+        <a href="{% url 'infoprofile' request.user.username %}" class="a-button" style="--clr:#e91919;">
+            <span class="material-icons-sharp">
+                text_snippet
+                </span>
+            {% trans "TELECHARGER INFORMATION PROFILE" %}
+        </a>
+    </div>
+
+    <!--CARD-->
+    <!--END CARD-->
+    <!--TABLE-->
+    
+    <div class="main-body">
+        <form action="{% url 'updatemdp' %}" method="post" id="newform">
+            {% csrf_token %}
+            <div class="l-card">
+                <div class="card lg-c12 md-c12 sm-c12 xs-c12">
+                    <div class="card-header">
+                        <h2>
+                            {% trans "Mot de passe" %}
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                                <div class="input_div">
+                                    <input type="text" class="input_field" id="pseudo" name="pseudo"
+                                        value="{{request.user.username}}" placeholder=" " required readonly
+                                        style="cursor: not-allowed;">
+                                    <label for="pseudo" class="input_label">{% trans "Nom d'utilisateur" %} <span
+                                            class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+        
+                            <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                                <div class="input_div">
+                                    <input type="password" class="input_field" id="input_feild" name="mdp" placeholder=" ">
+                                    <label for="input_feild" class="input_label">{% trans "Mot de passe" %} 
+                                        <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+                            
+                            <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                                <div class="input_div">
+                                    <input type="password" class="input_field" id="input_feild" name="mdpc" placeholder=" " required>
+                                    <label for="input_feild" class="input_label">{% trans "Confirmer mot de passe" %} <span class="required-txt"
+                                            style="color: red;">*</span></label>
+                                </div>
+                            </div>
+                            <div class="list-btn">
+                                <button type="submit" class="a-button" style="--clr:#7380ec;">
+                                    {% trans "Appliquer" %}
+                                </button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!--END TABLE-->
+</main>
+{% endblock content %}
+{% block js %}
+<script>
+    $(document).ready(function () {
+        $('#table_id').DataTable();
+    });
+</script>
+
+<script>
+    $("#newform").submit(function(e){
+        e.preventDefault();
+        swal({
+            title: "{% trans 'En cours' %} !",
+            text: "{% trans 'Veuillez ne pas quitter la page' %}",
+            type: "warning",
+            showCancelButton: false,
+            showConfirmButton : false,
+            confirmButtonColor: "#00BCD4",
+            confirmButtonText: "oK",
+            cancelButtonText: "No, cancel plx!",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        });
+        var formData = new FormData(this);
+        $.ajax({
+            type : "POST",
+            url: $(this).attr("action"),
+            data: formData,
+            dataType: 'json',
+            success: function(data) {                
+                if (data.etat == "2") {
+                    var textreturn = "{% trans 'Les mots de passe ne correspondent pas' %}";
+                    swal({
+                        title: "{% trans 'Erreur' %} !",
+                        text: textreturn,
+                        type: "error",
+                        showCancelButton: false,
+                        confirmButtonColor: "#7380ec",
+                        confirmButtonText: "oK",
+                        cancelButtonText: "No, cancel plx!",
+                        closeOnConfirm: true,
+                        closeOnCancel: true
+                    });
+                }else{
+                    
+                    var textreturn = "{% trans 'Mot de passe mis à jour, veuillez vous reconnecter' %}";
+                    swal({
+                        title: "{% trans 'Succès' %} !",
+                        text: textreturn,
+                        type: "success",
+                        showCancelButton: false,
+                        confirmButtonColor: "#7380ec",
+                        confirmButtonText: "oK",
+                        cancelButtonText: "No, cancel plx!",
+                        closeOnConfirm: true,
+                        closeOnCancel: true
+                    }, function (isConfirm) {
+                        if (isConfirm) {
+                            location.href = "{% url 'gimmo' %}";
+                        }
+                    });
+                }
+                
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        });
+    });
+</script>
+{% endblock js %}

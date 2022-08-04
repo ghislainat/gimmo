@@ -1,0 +1,248 @@
+{% extends 'gimmo/base.html' %}{% load i18n %} {% load static %} {% load ghis %}
+{% block css %}
+<link rel="stylesheet" href="{% static '/gimmo/css/modal.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/form.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/responsivebox.css' %}">
+{% endblock css %}
+{% block title %}{% trans "PROPRIETAIRE" %}{% endblock title %}
+{% block content %}
+        <main>
+            <h1>{% trans "Propriétaire" %}</h1>
+            
+            <div class="list-btn">
+                <a href="{% url 'newproprietaire' %}" class="a-button" style="--clr:#7380ec;">
+                    <span class="material-icons-sharp">
+                        add
+                        </span>
+                    {% trans "Nouveau" %}
+                </a>
+                <a href="{% url 'pdfproprietaire' %}" class="a-button" style="--clr:#e91919;">
+                    <span class="material-icons-sharp">
+                        text_snippet
+                        </span>
+                    {% trans "Export pdf" %}
+                </a>
+            </div>
+            <!--CARD-->
+            <!--END CARD-->
+            <!--TABLE-->
+            <div class="recent-orders">
+                <h2>{% trans "Liste" %}</h2>
+                <table id="table_id">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th data-hide="1">ID</th>
+                            <th>{% trans "Nom & prenoms" %}</th>
+                            <th>{% trans "Nombre de biens" %}</th>
+                            <th data-hide="1">{% trans "Contact" %}</th>
+                            <th>{% trans "Statut" %}</th>
+                            <th data-hide="1">{% trans "Rejoint" %}</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>{% load humanize %}
+                        {% for un_proprietaire in liste_proprietaire %}
+                            <tr>
+                                <td data-thead="#">{{forloop.counter}}</td>
+                                <td data-hide="1" data-thead="ID">{{un_proprietaire.user.username}}</td>
+                                <td data-thead="Nom & prenoms">{{un_proprietaire.nom|upper}} {{ un_proprietaire.prenom }}</td>
+                                <td data-thead="Nombre de biens">{{un_proprietaire.id|nbbien}}</td>
+                                <td data-hide="1" data-thead="Contact">{{ un_proprietaire.tel }}</td>
+                                <td data-thead="Statut">
+                                    {% if un_proprietaire.d1 == 1 %}
+                                      <span style="cursor: pointer;" onclick="desUser('{{un_proprietaire.idpub}}');" class="success">Actif</span>
+                                    {% else %}
+                                        <span style="cursor: pointer;" onclick="desUser('{{un_proprietaire.idpub}}');" class="danger">Inactif</span>
+                                    {% endif %}
+                                </td>
+                                <td data-hide="1" data-thead="Rejoint">{{ un_proprietaire.creation|naturalday }}</td>
+                                <td data-thead="Actions">
+                                    <div class="action-btn">
+                                        <span onclick="showInfo('{{un_proprietaire.idpub}}');" class="bg-primary" data-toolpit="yes" toolpit-text="{% trans 'Plus de détails' %}">
+                                            <span class="material-icons-sharp">
+                                                visibility
+                                            </span>
+                                        </span>
+                                        
+                                        <a href="{% url 'lproprietaire' un_proprietaire.idpub %}" class="bg-warning" data-toolpit="yes" toolpit-text="{% trans 'Modifier les informations' %}">
+                                            <span class="material-icons-sharp">
+                                                summarize
+                                            </span>
+                                        </a>
+
+                                        <a href="{% url 'eproprietaire' un_proprietaire.idpub %}" class="bg-info-dark" data-toolpit="yes" toolpit-text="{% trans 'Modifier les informations' %}">
+                                            <span class="material-icons-sharp">
+                                                edit_note
+                                            </span>
+                                        </a>
+                                        
+                                    </div>
+                                </td>
+                            </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            
+            <!--END TABLE-->
+        </main>
+  
+{% endblock content %}  
+  
+{% block js %}
+    
+<div class="modal sm-modal showmodala" id="modal-hs">
+    <div class="content">
+        <div class="modal-header">
+            <div class="title">Propriétaire</div>
+            <div class="close" onclick="showModal('showmodala');">
+                <span class="material-icons-sharp">
+                    close
+                </span>
+            </div>
+        </div>
+        <div class="modal-body">
+        </div>
+        <div class="modal-footer">
+            <form action="{% url 'delProprietaire' %}" method="GET" id="deleteU">
+                <input type="hidden" name="delproprietaire" value="" id="delproprietaire">
+                <div class="list-btn">
+                    <button type="button" onclick="showModal('showmodala');"  class="a-button" style="--clr:#e91919;">
+                        {% trans "Fermer" %}
+                    </button>
+                    <button type="submit" class="a-button" style="--clr:#7380ec;">
+                        {% trans "Confirmer" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $("#deleteU").submit(function(e){
+        e.preventDefault();
+        swal({
+            title: "{% trans 'En cours' %} !",
+            text: "{% trans 'Veuillez ne pas quitter la page' %}",
+            type: "warning",
+            showCancelButton: false,
+            showConfirmButton : false,
+            confirmButtonColor: "#00BCD4",
+            confirmButtonText: "oK",
+            cancelButtonText: "No, cancel plx!",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        });
+        var formData = new FormData(this);
+        $.ajax({
+            type : "GET",
+            url: $(this).attr("action"),
+            data: formData,
+            dataType: 'json',
+            success: function(data) {                
+                if (data.etat == "2") {
+                    var textreturn = "{% trans 'Opération non effectuée' %}";
+                    swal({
+                        title: "{% trans 'Erreur' %} !",
+                        text: textreturn,
+                        type: "error",
+                        showCancelButton: false,
+                        confirmButtonColor: "#7380ec",
+                        confirmButtonText: "oK",
+                        cancelButtonText: "No, cancel plx!",
+                        closeOnConfirm: true,
+                        closeOnCancel: true
+                    });
+                }else{
+                    
+                    var textreturn = "{% trans 'Opération effectuée' %}";
+                    swal({
+                        title: "{% trans 'Succès' %} !",
+                        text: textreturn,
+                        type: "success",
+                        showCancelButton: false,
+                        confirmButtonColor: "#7380ec",
+                        confirmButtonText: "oK",
+                        cancelButtonText: "No, cancel plx!",
+                        closeOnConfirm: true,
+                        closeOnCancel: false
+                    }, function (isConfirm) {
+                        if (isConfirm) {
+                            location.reload();
+                        }
+                    });
+                }
+                
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        });
+    });
+</script>
+
+<div class="modal lg-modal showmodal1" id="modal-hs">
+    <div class="content">
+        <div class="modal-header">
+            <div class="title">Propriétaire</div>
+            <div class="close" onclick="showModal('showmodal1');">
+                <span class="material-icons-sharp">
+                    close
+                </span>
+            </div>
+        </div>
+        <div class="modal-body">
+        </div>
+        <div class="modal-footer">
+            <div class="list-btn">
+                <button type="button" onclick="showModal('showmodal1');"  class="a-button" style="--clr:#e91919;">
+                    {% trans "Fermer" %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#table_id').DataTable();
+    });
+</script>
+<script>
+    function showInfo(pk){
+        $.ajax({
+            url: "{% url 'infoProprietaire' %}",
+            data: {
+                'id': pk
+            },
+            dataType: 'json',
+            success: function(data) {
+                if (data) {
+                    $('.modal-body').html(data.un_proprietaire);
+                    showModal('showmodal1');
+                }
+            }
+        });
+    }
+</script>
+
+<script>
+    function desUser(pk){
+        $('#delproprietaire').val(pk);
+        $.ajax({
+            url: "{% url 'desProprietaire' %}",
+            data: {
+                'id': pk
+            },
+            dataType: 'json',
+            success: function(data) {
+                if (data) {
+                    $('.modal-body').html(data.text);
+                    showModal('showmodala');
+                }
+            }
+        });
+    }
+</script>
+{% endblock js %}

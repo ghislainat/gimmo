@@ -1,0 +1,168 @@
+<!DOCTYPE html>{% load static%}{% load i18n %} {% load ghis %} {% load humanize %}
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>{{ filenom }}</title>
+    
+    <style>
+        @page {
+            size: a4 portrait;
+        }
+
+        #invoice-POS {
+            box-shadow: 0 0 1in -0.25in rgba(0, 0, 0, 0.5);
+            padding: 2mm;
+            margin: 0 auto;
+            width: 88mm;
+            background: #FFF;
+        }
+        
+        #top,
+        #mid,
+        #botk {
+            /* Targets all id with 'col-' */
+            border-bottom: 1px solid #EEE;
+        }
+        
+        #top {
+            min-height: 100px;
+        }
+        
+        #mid {
+            min-height: 80px;
+        }
+        
+        #bot {
+            min-height: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="invoice-POS">
+        <div id="top">
+            <table>
+                <tr style="border: 1px solid transparent;">
+                    <td align="center" colspan="4" style="border: none;">
+                        <div class="">
+                            <img style="width:100px;height:100px;border-radius:50%;" src="{{ etablissement.logo.path }}"><br/><br/>
+                            <span style="font-size: 30px;color:black;font-weight:bold;font-style:italic;">{{ etablissement.raisonsocial }}</span><br/>
+                            <span>{% trans 'Adresse' %} : {{ etablissement.adresse }}</span><br/>
+                            <span>(00228) {{ etablissement.tel }} / {{ etablissement.telfixe }} / {{ etablissement.email }}</span>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div><br/>
+        <div id="mid">
+            <table style="width:100%;padding:0;margin:0;background-color:#f7f7f7;">
+                <thead>
+                    <tr style="width: 100%;background-color:#fff;">
+                        <td colspan="4" style="border-left:none;border-right:none;text-align:center;font-size:14px;font-weight:bold;">BIEN: {{ un_bien.nom }}</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="width:150px;height:180px;background-color:#f7f7f7;text-align:center;" rowspan="4">
+                            {% if not un_bien.photo %}
+                            <img src="{{ etablissement.logo.path }}" style="width: 110px; height: 120px;" />
+                            {% else %}
+                            <img src="{{ un_bien.photo.path }}" style="width: 110px; height: 120px;" />
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-left:40px;padding-top:10px;">
+                            <span style="font-size:12px;">Référence</span><br />
+                            <span style="color:black;" class="sexe">{{ un_bien.nom }}</span>
+                        </td>
+                        <td style="padding-left:40px;padding-top:10px;">
+                            <span style="font-size:12px;">Propriétaire</span><br/>
+                            <span style="color:black;" class="nom">{{ un_bien.proprietaire.nom|upper }} {{ un_bien.proprietaire.prenom }}</span>
+                        </td>
+                        <td style="padding-left:40px;padding-top:10px;">
+                            <span style="font-size:12px;">N° lot</span><br />
+                            <span style="color:black;" class="prenom">{{ un_bien.numlot }}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-left:40px;padding-top:10px;">
+                            <span style="font-size:12px;">Lot</span><br />
+                            <span style="color:black;" class="matricule">{{ un_bien.lot }}</span>
+                        </td>
+                        <td style="padding-left:40px;padding-top:10px;">
+                            <span style="font-size:12px;">Titre foncier</span><br />
+                            <span style="color:black;" class="nationalite">{{ un_bien.nbenfant }}</span>
+                        </td>
+                        <td style="padding-left:40px;padding-top:10px;">
+                            <span style="font-size:12px;">Superficie (m2)</span><br />
+                            <span style="color:black;" class="daten">{{ un_bien.superficie }}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-left:40px;padding-top:10px;">
+                            <span style="font-size:12px;">Type de bien</span><br />
+                            <span style="color:black;" class="daten">
+                                {% if un_bien.typebien == 1 %}
+                                    Immeuble
+                                {% elif un_bien.typebien == 2 %}
+                                    Maison basse
+                                {% elif un_bien.typebien == 3 %}
+                                    Duplex
+                                {% elif un_bien.typebien == 4 %}
+                                    Villa
+                                {% elif un_bien.typebien == 5 %}
+                                    Appartement
+                                {% elif un_bien.typebien == 5 %}
+                                    Terrain
+                                {% else %}
+                                    Autre
+                                {% endif %}
+                            </span>
+                        </td>
+                        <td style="padding-left:40px;padding-top:10px;">
+                            <div class="inp">
+                                <span style="font-size:12px;">Adresse</span><br />
+                                <span style="color:black;" class="nume">{{ un_bien.adresse }}</span>
+                            </div>
+                        </td>
+                        <td style="padding-left:40px;padding-top:10px;">
+                            <div class="inp">
+                                <span style="font-size:12px;">Ville</span><br />
+                                <span style="color:black;" class="emaile">{{ un_bien.ville }}</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td style="padding-left:40px;padding-top:10px;">
+                            <div class="inp">
+                                <span style="font-size:12px;">Quartier</span><br />
+                                <span style="color:black;" class="spec">{{ un_bien.quartier }}</span>
+                            </div>
+                        </td>
+                        <td style="padding-left:40px;padding-top:10px;">
+                            <div class="inp">
+                                <span style="font-size:12px;">Valeur</span><br />
+                                <span style="color:black;" class="pseudo">{{ un_bien.valeur }}</span>
+                            </div>
+                        </td>
+                        <td style="padding-left:40px;padding-top:10px;">
+                            <div class="inp">
+                                <span style="font-size:12px;">Date création du bien</span><br />
+                                <span style="color:black;" class="mdp">{{ un_bien.creation|naturalday }}</span>
+                            </div>
+                        </td>
+                    </tr>
+                        
+                </tbody>
+                </table>
+        </div>
+        <!--End InvoiceBot-->
+    </div>
+    <!--End Invoice-->
+
+</body>
+
+</html>

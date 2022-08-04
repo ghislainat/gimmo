@@ -1,0 +1,387 @@
+{% load i18n %} {% load static %}
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <!--<script src="https://kit.fontawesome.com/64d58efce2.js" crossorigin="anonymous"></script>-->
+    <link rel="icon" href="{% static '/gimmo/images/gimmo_svg.svg' %}" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet">
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+    <link rel="stylesheet" href="{% static '/gimmo/pay/pay.css' %}" />
+	<script src="https://cdn.cinetpay.com/seamless/main.js"></script>
+    <title>ABONNEMENT</title>
+    <style>
+        /*.iti-mobile{
+            background-color: transparent !important;
+            height: auto !important;
+        }
+        .germinator span:nth-child(1){
+            background: #7380ec !important;
+        }
+        .germinator span:nth-child(2){
+            background: #4d5496 !important;
+        }
+        .germinator span:nth-child(3){
+            background: #7380ec !important;
+        }
+
+        .ldio-5owbnf6l9j7 div:nth-child(1){
+            background: #4d5496 !important;
+        }
+        .ldio-5owbnf6l9j7 div:nth-child(2){
+            background: #7380ec !important;
+        }
+        .ldio-5owbnf6l9j7 div:nth-child(3){
+            background: #4d5496 !important;
+        }
+        .ldio-5owbnf6l9j7 div:nth-child(4){
+            background: #7380ec !important;
+        }
+        .ldio-5owbnf6l9j7 div:nth-child(5){
+            background: #4d5496 !important;
+        }*/
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <div class="forms-container">
+            <div class="signin-signup">
+                <form method="POST" action="{% url 'typeabonnement' %}" class="sign-in-form" id="typeabonnement">
+                    {% csrf_token %}
+                    <h2 class="title">Type d'abonnement</h2>
+                    <div class="tpab">
+                        <div class="form-group mb-3">
+                            <label class="checkbox-wrap checkbox-primary mb-0">1 mois (20 500 XOF)
+                                <input type="radio" name="typeab" value="31" required>
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="checkbox-wrap checkbox-primary mb-0">6 mois (123 000 XOF)
+                                <input type="radio" name="typeab" value="186" required>
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
+                        <div class="form-group mb-3">
+                            <label class="checkbox-wrap checkbox-primary mb-0">1 an (246 000 XOF)
+                                <input type="radio" name="typeab" value="370" required>
+                                <span class="checkmark"></span>
+                            </label>
+                        </div>
+                    </div>
+                    <input type="submit" value="Suivant" class="btn solid" />
+                    <p class="social-text">by <a href="https://tech-agence.net" class="tech-agence">TECH-AGENCE</a></p>
+                </form>
+
+                <form method="POST" action="{% url 'demandeactivation' %}" class="sign-in-form" id="demandeactivation">
+                    {% csrf_token %}
+                    <h2 class="title">Paiement</h2>
+                    <div class="finalab">
+                        <table style="width: 100%;padding: 5px;">
+                            <thead style="background: #f1f1f1;">
+                                <tr>
+                                    <th style="padding: 10px;">Libelé</th>
+                                    <th style="padding: 10px;">Durée</th>
+                                    <th style="padding: 10px;text-align: right;padding-right: 5px;">Montant</th>
+                                </tr>
+                            </thead>
+                            <tfoot style="background: #f1f1f1;">
+                                <tr>
+                                    <th style="padding: 10px;" colspan="2">TOTAL</th>
+                                    <th style="padding: 10px;text-align: right;padding-right: 5px;" class="totalp">1 000 00</th>
+                                </tr>
+                            </tfoot>
+                            <tbody>
+                                <tr style="border-bottom: 1px solid #808080;">
+                                    <td style="padding: 10px;">Abonnement</td>
+                                    <td  style="padding: 10px;" class="abn_type"></td>
+                                    <td  style="padding: 10px;text-align: right;padding-right: 5px;" class="abn_mtt"></td>
+                                </tr>
+                            </tbody>
+                        </table>
+                        <br/>
+                    </div>
+                    
+                    <input type="hidden" name="payvalue" class="payvalue">
+                    <input type="hidden" class="typeabcd" name="typeabcd">
+                    <button id="paiementbtn" type="submit" class="btn solid">Payer</button>
+                    <p class="social-text">by <a href="https://tech-agence.net" class="tech-agence">TECH-AGENCE</a></p>
+                </form>
+                <form action="#" class="sign-in-form" id="abnsuccess">
+                    
+                    <h2 class="title" style="color: green;">Succès</h2>
+                    <div class="finalab">
+                        <span style="color: green;">Abonnement effectué</span>
+                        <br/>
+                        <span style="color: green;">durée d'utilisation : <b class="dureeabn"></b></span>
+                    </div>
+
+                    <button type="button" class="btn solid" onclick="location.href='/'">CONNEXION</button>
+
+                    <p class="social-text">by <a href="https://tech-agence.net" class="tech-agence">TECH-AGENCE</a></p>
+                </form>
+                <form action="#" class="sign-in-form" id="abnerror">
+                    
+                    <h2 class="title" style="color: red;">Erreur</h2>
+                    <div class="finalab">
+                        <span style="color: red;">Abonnement non effectué</span>
+                        <br/>
+                        <span style="color: red;">Veuillez réessayer</span>
+                    </div>
+
+                    <button type="button" class="btn solid" onclick="location.href='/pay/'">REESSAYER</button>
+
+                    <p class="social-text">by <a href="https://tech-agence.net" class="tech-agence">TECH-AGENCE</a></p>
+
+                </form>
+
+                <form action="#" method="post" id="submitActivation" class="sign-up-form">
+                    {% csrf_token %}
+                    <h2 class="title">Clé d'activation</h2>
+                    <span class="error-textmail"></span>
+                    <div class="input-field">
+                        <span class="material-icons-sharp">
+                            key
+                        </span>
+                        <input type="text" name="keyfile" placeholder="*.*.*.*.*" />
+                    </div>
+                    <input type="submit" class="btn" value="{% trans 'Continuer' %}" />
+                    <p class="social-text">by <a href="https://tech-agence.net" class="tech-agence">TECH-AGENCE</a></p>
+                    <!--<div class="social-media">
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-facebook-f"></i>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-twitter"></i>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-google"></i>
+                        </a>
+                        <a href="#" class="social-icon">
+                            <i class="fab fa-linkedin-in"></i>
+                        </a>
+                    </div>-->
+                </form>
+                <form action="#" class="sign-up-form" id="cleabnsuccess">
+                    
+                    <h2 class="title" style="color: green;">Succès</h2>
+                    <div class="finalab">
+                        <span style="color: green;">Abonnement effectué</span>
+                        <br/>
+                        <span style="color: green;">durée d'utilisation : <b class="dureeabn"></b></span>
+                    </div>
+
+                    <button type="button" class="btn solid" onclick="location.href='/'">CONNEXION</button>
+
+                    <p class="social-text">by <a href="https://tech-agence.net" class="tech-agence">TECH-AGENCE</a></p>
+                </form>
+                <form action="#" class="sign-up-form" id="cleabnerror">
+                    
+                    <h2 class="title" style="color: red;">Erreur</h2>
+                    <div class="finalab">
+                        <span style="color: red;">Abonnement non effectué</span>
+                        <br/>
+                        <span style="color: red;" class="keyerror"></span>
+                    </div>
+
+                    <button type="button" class="btn solid" onclick="location.href='/pay/'">REESSAYER</button>
+
+                    <p class="social-text">by <a href="https://tech-agence.net" class="tech-agence">TECH-AGENCE</a></p>
+
+                </form>
+            </div>
+        </div>
+
+        <div class="panels-container">
+            <div class="panel left-panel">
+                <div class="content">
+                    <h3>Vous avez une clé d'activation ?</h3>
+                    <p>
+                        Veuillez cliquer sur le bouton pour saisir la clé.
+                    </p>
+                    <button class="btn transparent" id="sign-up-btn">
+                        CLE GIMMO
+                    </button>
+                    <p class="social-text"><a href="{% url 'gimmo' %}" class="tech-agence" style="color: #000;">annuler</a></p>
+                </div>
+                <img src="{% static '/gimmo/pay/so.svg' %}" class="image" alt="" />
+            </div>
+            <div class="panel right-panel">
+                <div class="content">
+                    <h3>Vous n'avez pas de clé d'activation ?</h3>
+                    <p>
+                        Veuillez cliquer sur le boutton pour activer votre logiciel.
+                    </p>
+                    <button class="btn transparent" id="sign-in-btn">
+                        ACTIVER
+                    </button>
+                    <p class="social-text"><a href="{% url 'gimmo' %}" class="tech-agence" style="color: #000;">annuler</a></p>
+                </div>
+                <img src="{% static '/gimmo/pay/se.svg' %}" class="image" alt="" />
+            </div>
+        </div>
+    </div>
+
+    <script src="{% static 'gimmo/plugins/jquery/jquery.min.js' %}"></script>
+    <script src="{% static '/gimmo/pay/pay.js' %}"></script>
+    <script>
+		$("#typeabonnement").submit(function (e) {
+			e.preventDefault();
+			var form = $(this);
+			var url = $(this).attr("action");
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: form.serialize(),
+				dataType: 'json',
+				success: function (data) {
+					if (data) {
+						$("#typeabonnement").css({'display':'none','visibility':'hidden'});
+                        $("#demandeactivation").css({'display':'flex','visibility':'visible'});
+                        $('.abn_type').text(data.typeab_txt);
+                        $('.abn_mtt').text(addCommas(data.montant));		
+                        $('.payvalue').val(data.montant);		
+                        $('.typeabcd').val(data.typeab);						
+						$('.totalp').text(addCommas(data.montant)+' XOF');
+					}
+
+				},
+				error: function (data) {
+					alert('mal');
+				}
+			});
+		});
+        function addCommas(nStr)
+            {
+                nStr += '';
+                x = nStr.split('.');
+                x1 = x[0];
+                x2 = x.length > 1 ? '.' + x[1] : '';
+                var rgx = /(\d+)(\d{3})/;
+                while (rgx.test(x1)) {
+                    x1 = x1.replace(rgx, '$1' + ' ' + '$2');
+                }
+                return x1 + x2;
+            }
+	</script>
+    <script>
+        $('#paiementbtn').click(function(){
+            $('#paiementbtn').css({'cursor': 'not-allowed'});
+            $('#paiementbtn').text('En cours...');
+        });
+		$("#demandeactivation").submit(function (e) {
+			e.preventDefault();
+			var form = $(this);
+			var url = $(this).attr("action");
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: form.serialize(),
+				dataType: 'json',
+				success: function (data) {
+					if (data) {
+						console.log('demande envoyee');
+                        checkout(data.montant);
+					}
+
+				},
+				error: function (data) {
+					console.log('mal');
+				}
+			});
+		});
+	</script>
+    <script>
+        function checkout(montant) {
+            CinetPay.setConfig({
+                apikey: '{{TECHAGENCE_VAR.TECHAGENCE_API_KEY}}',
+                site_id: '{{TECHAGENCE_VAR.TECHAGENCE_SITE_ID}}',
+                notify_url: '{{TECHAGENCE_VAR.TECHAGENCE_NOTIFY_URL}}',
+                mode: '{{TECHAGENCE_VAR.TECHAGENCE_MODE}}'
+            });
+            CinetPay.getCheckout({
+                transaction_id: Math.floor(Math.random() * 100000000).toString(),
+                amount: montant,
+                currency: 'XOF',
+                channels: 'ALL',
+                description: 'Abonnement gImmo',   
+                 //Fournir ces variables pour le paiements par carte bancaire
+                customer_name:"Joe",//Le nom du client
+                customer_surname:"Down",//Le prenom du client
+                customer_email: "down@test.com",//l'email du client
+                customer_phone_number: "088767611",//l'email du client
+                customer_address : "BP 0024",//addresse du client
+                customer_city: "Antananarivo",// La ville du client
+                customer_country : "CM",// le code ISO du pays
+                customer_state : "CM",// le code ISO l'état
+                customer_zip_code : "06510", // code postal
+
+            });
+            CinetPay.waitResponse(function(data) {
+                if (data.status == "REFUSED") {
+                    $("#demandeactivation").css({'display':'none','visibility':'hidden'});
+					$("#abnerror").css({'display':'flex','visibility':'visible'});
+					$("#abnerror").css({'display':'flex','visibility':'visible'});
+                    //.cp-modal .cp-content-wrapper .cp-modal.open ACCEPTED
+                    $('.cp-modal').removeClass('open');
+                } else if (data.status == "ACCEPTED") {
+                    $("#demandeactivation").css({'display':'none','visibility':'hidden'});
+					$("#abnsuccess").css({'display':'flex','visibility':'visible'});
+                    $('.cp-modal').removeClass('open');
+                    $.ajax({
+                        type: "GET",
+                        url: '{% url "activationdone" %}',
+                        data: {
+                            'cinet_status': '$this.cinet_status_timestamp'
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data) {
+                                $('.dureeabn').text(data.typeabon);
+                            }
+
+                        },
+                        error: function (data) {
+                            console.log('mal');
+                        }
+                    });
+                      
+                }
+            });
+            CinetPay.onError(function(data) {
+                console.log(data);
+            });
+        }
+    </script>
+    
+    <script>
+        $("#submitActivation").submit(function(e){
+        e.preventDefault();
+        var form = $(this);
+        $.ajax({
+            type : "POST",
+            url: "{% url 'cleactivation' %}",
+            data: form.serialize(),
+            dataType: 'json',
+            success: function(data) {
+                if (data.etat == "1") {
+                    $('.dureeabn').text(data.typeab);
+
+                    $("#submitActivation").css({'display':'none','visibility':'hidden'});
+					$("#cleabnsuccess").css({'display':'flex','visibility':'visible'});
+                }else{
+                    $("#submitActivation").css({'display':'none','visibility':'hidden'});
+					$("#cleabnerror").css({'display':'flex','visibility':'visible'});
+                    $('.keyerror').text(data.etat);
+                }
+                
+            }
+        });
+    });
+    </script>
+</body>
+
+</html>

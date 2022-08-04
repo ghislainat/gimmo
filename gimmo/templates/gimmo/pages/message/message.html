@@ -1,0 +1,159 @@
+{% extends 'gimmo/base.html' %}{% load i18n %}{% load static %}{% load humanize %}
+{% block css %}
+<link rel="stylesheet" href="{% static '/gimmo/css/modal.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/form.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/responsivebox.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/sms.css' %}"><!-- Sweetalert Css -->
+{% endblock css %}
+{% block title %}{% trans "MESSAGE" %}{% endblock title %}
+{% block content %}
+        <main>
+            <h1>Message</h1>
+            <h2>Liste des discussions</h2>
+            <!--CARD-->
+            <div class="main-body">
+                <div class="list-sms">
+                    {% for un_utilisateur in list_utilisateur %}
+                    <div class="single-sms" onclick="userSms('{{un_utilisateur.id}}');">
+                        <div class="user-info">
+                            <div class="profile-img">
+                                <img src="{% static '/gimmo/images/profile-1.jpg' %}" alt="PROFILE">
+                            </div>
+                            <div class="profile-desc">
+                                <span>{{un_utilisateur.first_name|upper}} {{un_utilisateur.last_name}}</span>
+                                <i>
+                                    ({% if un_utilisateur.employe.d13 == 1 or un_utilisateur.is_staff %}
+                                        Admin
+                                    {% elif un_utilisateur.locataire.d1 == 1 %}
+                                        Locataire
+                                    {% elif un_utilisateur.proprietaire.d1 == 1 %}
+                                        Propriétaire
+                                    {% else %}
+                                        Personnel
+                                    {% endif %})
+                                </i>
+                                <i>{{un_utilisateur.last_login|naturaltime}}</i>
+                            </div>
+                            <div class="profile-statut cl-success">●</div>
+                        </div>
+                    </div>
+                    {% endfor %}
+                </div>
+            </div>
+
+            
+            <!--END TABLE-->
+        </main>
+{% endblock content %}    
+{% block js %}
+<div class="chat-modal showmodalsms" id="modal-hs">
+    <div class="chat-container">
+        <div class="chart-chat">
+            <div class="chat-header">
+                <div class="chart-left">
+                    <span class="arrow material-icons-sharp" onclick="showModal('showmodalsms');">
+                        arrow_back
+                    </span>
+                    <img src="{% static 'gimmo/img/pp.png' %}" class="pp">
+                    <div class="chart-profile-des">
+                        <h3 class="sms_user_nom">Elias</h3>
+                        <small class="sms_user_type">online</small>
+                    </div>
+                </div>
+                <div class="chart-right">
+                    <span class="icon material-icons-sharp">
+                        phone
+                    </span>
+                </div>
+            </div>
+            <div class="chat-box">
+                <div class="chat-r">
+                    <div class="sp"></div>
+                    <div class="mess mess-r">
+                        <p>I wish it was like this more frequently.</p>
+                        <div class="check">
+                            <span>4:00 PM</span>
+                        </div>
+                    </div>
+                </div>
+                <div class="chat-l">
+                    <div class="mess">
+                        <p>
+                           Me too.
+                        </p>
+                        <div class="check">
+                            <span>4:00 PM</span>
+                        </div>
+                    </div>
+                    <div class="sp"></div>
+                </div>
+                <div class="chat-r">
+                    <div class="sp"></div>
+                    <div class="mess mess-r">
+                        <p>
+                            So where are you going now? je suis So where are you going now? je suis So where are you going now? je suis So where are you going now? je suis
+                        </p>
+                        <div class="check">
+                            <span>4:00 PM</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="chat-footer">
+                <textarea placeholder="Type a message"></textarea>
+                <div class="send">
+                    <span class="material-icons-sharp">
+                        send
+                    </span>
+                </div>
+                
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    
+//SHOW MODAL
+function showModalsms() {
+    var body = document.querySelector('.container');
+    body.classList.toggle('active-modal');
+
+    var modal = document.querySelector('.chat-mosdal');
+    modal.classList.toggle('active-md');
+}
+</script>
+<script>
+    function userSms(sms_user){
+        $.ajax({
+            type : "GET",
+            url: '{% url "get_sms_user" %}',
+            data: {
+                'sms_user': sms_user
+            },
+            dataType: 'json',
+            success: function(data) {                
+                if (data.etat == "2") {
+                    var textreturn = "{% trans 'Locative déjà enrégistrée' %}";
+                    swal({
+                        title: "{% trans 'Erreur' %} !",
+                        text: textreturn,
+                        type: "error",
+                        showCancelButton: false,
+                        confirmButtonColor: "#7380ec",
+                        confirmButtonText: "oK",
+                        cancelButtonText: "No, cancel plx!",
+                        closeOnConfirm: true,
+                        closeOnCancel: true
+                    });
+                }else{
+                    $('.sms_user_nom').text(data.nom_prenom)
+                    $('.sms_user_type').text(data.user_type)
+                    showModal('showmodalsms');
+                }
+                
+            }
+        });
+    }
+</script>
+{% endblock js %}

@@ -1,0 +1,111 @@
+{% extends 'gimmo/base.html' %}{% load i18n %}{% load static %} {% load humanize %}
+{% block css %}
+<link rel="stylesheet" href="{% static '/gimmo/css/modal.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/form.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/responsivebox.css' %}">
+{% endblock css %}
+{% block title %}{% trans "PAIEMENT" %}{% endblock title %}
+{% block content %}
+        <main>
+            <h1>Paiement</h1>
+            <div class="list-btn">
+                <a href="{% url 'pdfpaiement' %}" class="a-button" style="--clr:#e91919;">
+                    <span class="material-icons-sharp">
+                        text_snippet
+                        </span>
+                    {% trans "Export pdf" %}
+                </a>
+            </div>
+            <!--CARD-->
+            <div class="main-body">
+                <div class="recent-orders">
+                    <h2>{% trans "Liste" %}</h2>
+                    <table id="table_id">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>ID</th>
+                                <th>{% trans "Type facture" %}</th>
+                                <th>{% trans "Locataire" %}</th>
+                                <th>{% trans "Locative" %}</th>
+                                <th>{% trans "Montant" %}</th>
+                                <th>{% trans "Payé" %}</th>
+                                <th>{% trans "Reste" %}</th>
+                                <th>{% trans "Statut" %}</th>
+                                <th>{% trans "Traité le" %}</th>
+                                <th>{% trans "Actions" %}</th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <th colspan="5">TOTAL</th>
+                                <th class="cl-primary">{{ totala }}</th>
+                                <th class="cl-primary">{{ totalp }}</th>
+                                <th class="cl-primary">{{ totalr }}</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                        <tbody>{% load humanize %}
+                            {% for une_facture in liste_facture %}
+                            <tr>
+                                <td data-thead="#">{{forloop.counter}}</td>
+                                <td data-thead="ID">{{une_facture.reffacture}}</td>
+                                <td data-thead="Type facture">
+                                    {% if une_facture.typefacture != 'Avance/Caution' %}
+                                    Loyer {{une_facture.contrat.prochainpay|naturalday}}
+                                    {% else %}
+                                    {{une_facture.typefacture}}
+                                    {% endif %}
+                                    
+                                    </td>
+                                <td data-thead="Locataire">
+                                    {% if une_facture.locataire.raisonsocial == '' %}
+                                        {{une_facture.locataire.nom|upper}} {{ une_facture.locataire.prenom }}
+                                    {% else %}
+                                        {{une_facture.locataire.raisonsocial|upper}}
+                                    {% endif %}
+                                </td>
+                                <td data-thead="Locative">{{une_facture.locative.reflocative}}</td>
+                                <td data-thead="Montant">{{une_facture.totfacture}}</td>
+                                <td data-thead="Payé">{{une_facture.payefacture}}</td>
+                                <td data-thead="Reste">{{une_facture.restefacture}}</td>
+                                <td data-thead="Statut">
+                                    {% if une_facture.etat == 1 %}
+                                        <span class="success">{% trans "Terminé" %}</span>
+                                    {% elif une_facture.etat == 2 %}
+                                        <span class="danger">{% trans "En retard" %}</span>
+                                    {% elif une_facture.etat == 3 %}
+                                        <span class="warning">{% trans "En attente" %}</span>
+                                    {% else %}
+                                        <span class="warning">{% trans "En cours" %}</span>
+                                    {% endif %}
+                                </td>
+                                <td data-thead="Traité le">{{une_facture.creation|naturalday}}</td>
+                                <td data-thead="Actions">
+                                    <div class="action-btn">
+                                        <a href="{% url 'facture' une_facture.reffacture %}" class="bg-info-dark">
+                                            <span class="material-icons-sharp">
+                                                credit_score
+                                            </span>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!--END TABLE-->
+        </main>
+{% endblock content %}    
+{% block js %}
+
+<script>
+    $(document).ready(function () {
+        $('#table_id').DataTable();
+    });
+</script>
+{% endblock js %}

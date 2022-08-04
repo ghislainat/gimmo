@@ -1,0 +1,332 @@
+{% extends 'gimmo/base.html' %}{% load i18n %}{% load static %}
+{% block css %}
+<link rel="stylesheet" href="{% static '/gimmo/css/modal.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/form.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/responsivebox.css' %}">
+{% endblock css %}
+{% block title %}{% trans "PAYER" %}{% endblock title %}
+{% block content %}
+        <main>
+            <h1>Payer</h1>
+            <div class="list-btn">
+                
+            </div>
+            <!--CARD-->
+            <div class="main-body">
+                <div class="recent-orders">
+                    <h2>{% trans "Liste" %}</h2>
+                    <table id="table_id">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>ID</th>
+                                <th>{% trans "Locataire" %}</th>
+                                <th>{% trans "Locative" %}</th>
+                                <th>{% trans "Frais location" %}</th>
+                                <th>{% trans "Frais sur loyer" %}</th>
+                                <th>{% trans "Total" %}</th>
+                                <th>{% trans "Prochain paiement" %}</th>
+                                <th>{% trans "Actions" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>{% load humanize %}
+                            {% for un_contrat in liste_contrat %}
+                            <tr>
+                                <td data-thead="#">{{forloop.counter}}</td>
+                                <td data-thead="ID">{{un_contrat.refcontrat}}</td>
+                                <td data-thead="Locataire">
+                                    {% if un_contrat.locataire.raisonsocial == '' %}
+                                        {{un_contrat.locataire.nom|upper}} {{ un_contrat.locataire.prenom }}
+                                    {% else %}
+                                        {{un_contrat.locataire.raisonsocial|upper}}
+                                    {% endif %}
+                                </td>
+                                <td data-thead="Locative">{{un_contrat.locative.reflocative}}</td>
+                                <td data-thead="Frais location">{{un_contrat.locative.montant}}</td>
+                                <td data-thead="Frais sur loyer">{{un_contrat.locative.charge}}</td>
+                                <td data-thead="Total">{{un_contrat.locative.montant|add:un_contrat.locative.charge}}</td>
+                                <td data-thead="Prochain paiement">{{un_contrat.prochainpay|naturalday}}</td>
+                                <td data-thead="Actions">
+                                    <div class="action-btn">
+                                        <span onclick="payLoy('{{un_contrat.idpub}}');" class="bg-primary" data-toolpit="yes" toolpit-text="{% trans 'Plus de détails' %}">
+                                            <span class="material-icons-sharp">
+                                                credit_score
+                                            </span>
+                                        </span>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!--END TABLE-->
+        </main>
+{% endblock content %}    
+{% block js %}
+
+<div class="modal sm-modal showmodal1" id="modal-hs">
+    <div class="content">
+        <div class="modal-header">
+            <div class="title">Paiement</div>
+            <div class="close" onclick="showModal('showmodal1');">
+                <span class="material-icons-sharp">
+                    close
+                </span>
+            </div>
+        </div>
+        <div class="modal-body">
+            <form action="{% url 'payerloyer' %}" method="post" id="newform">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                        <h4>Facture {{ une_facture.reffacture }}</h4><br>
+                    </div>
+
+                    <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                        <div class="input_div">
+                            <input type="date" class="input_field" id="datep" name=""
+                                placeholder=" " min="0" value=""  readonly style="cursor: not-allowed;">
+                            <label for="input_feild" class="input_label">{% trans "Prochain paiement" %}</label>
+                        </div>
+                    </div>
+
+                    <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                        <div class="select_div">
+                            <div class="select_label">{% trans "Type de paiement" %} <span class="required-txt" style="color: red;">*</span></div>
+                            <select name="typepay" id="choixoperation" class="select_field" required>
+                                <option value="1">{% trans "Espèces" %}</option>
+                                <option value="2">{% trans "Mobile" %}</option>
+                                <option value="3">{% trans "Bancaire" %}</option>
+                                <option value="4">{% trans "Wallet" %}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                        <div class="input_div">
+                            <input type="number" class="input_field" id="mtt" name="mtt"
+                                placeholder=" " min="0" value="" readonly style="cursor: not-allowed;">
+                            <label for="input_feild" class="input_label">{% trans "Montant Loyer" %}</label>
+                        </div>
+                    </div>
+                    
+
+                    <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                        <div class="input_div">
+                            <input type="number" class="input_field" id="mois" name="mois"
+                                placeholder=" " min="1" value="1" onkeyup="getTotal();" onclick="getTotal();">
+                            <label for="input_feild" class="input_label">{% trans "Nombre de mois" %}</label>
+                        </div>
+                    </div>
+                    <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                        <div class="input_div">
+                            <input type="text" class="input_field" id="total" value="0" placeholder=" " readonly style="cursor: not-allowed;text-align: center;font-weight: 600;color: #7380ec;border: 1px solid #7380ec;">
+                            <label for="input_feild" class="input_label" style="color: #7380ec;">{% trans "Total" %}</label>
+                        </div>
+                    </div>
+                    <!--<div class="lg-c12 md-c12 sm-c12 xs-c12">
+                        <div class="input_div">-->
+                            <!--<label for="montant_pay" class="input_label">{% trans "Payer" %} <span class="required-txt" style="color: red;">*</span></label>
+                        </div>
+                    </div>-->
+                    <input type="hidden" id="iddpub" name="iddpub">
+                            
+                </div>
+                <div class="modal-footer">
+                    <div class="list-btn">
+                        <button type="submit" class="a-button" id="payertrans" style="--clr:#7380ec;">
+                            {% trans "Payer" %}
+                        </button>
+                        <button type="button" onclick="showModal('showmodal1');"  class="a-button" style="--clr:#e91919;">
+                            {% trans "Fermer" %}
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $(document).ready(function () {
+        $('#table_id').DataTable();
+    });
+</script>
+<script>
+    function payLoy(id){
+        $.ajax({
+            type : "GET",
+            url: '{% url "payinfo" %}',
+            data: {
+                'idpub': id
+            },
+            dataType: 'json',
+            success: function(data) {                
+                if (data) {
+                    $('#iddpub').val(id);
+                   $('#mtt').val(data.solde);
+                   $('#datep').val(data.ppay);
+                    $('#total').val(data.solde);
+                   showModal('showmodal1');
+                }
+            }
+        });
+    }
+    function getTotal(){
+        var montant = $('#mtt').val();
+        var qte = $('#mois').val();
+        total = qte*montant;
+        $('#total').val(total);
+    }
+</script>
+<script>
+    $(document).ready(function(){
+        $("#choixoperation").on('change', function () {
+            var $this = $(this);
+            console.log($this.val());
+            
+            if ($this.val() != 1) {
+                $('#payertrans').attr('type','button');
+                $('#payertrans').attr('onclick','checkout()');
+            }else{
+                $('#payertrans').attr('type','submit');
+                $('#payertrans').removeAttr('onclick');
+            }
+        });
+    });
+</script>
+<script>
+    $("#newform").submit(function(e){
+        var typetransaction = $('#select_field').val();
+        e.preventDefault();
+        swal({
+            title: "{% trans 'En cours' %} !",
+            text: "{% trans 'Veuillez ne pas quitter la page' %}",
+            type: "warning",
+            showCancelButton: false,
+            showConfirmButton : false,
+            confirmButtonColor: "#00BCD4",
+            confirmButtonText: "oK",
+            cancelButtonText: "No, cancel plx!",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        });
+        var formData = new FormData(this);
+        $.ajax({
+            type : "POST",
+            url: $(this).attr("action"),
+            data: formData,
+            dataType: 'json',
+            success: function(data) {                
+                if (data.etat == "2") {
+                    var textreturn = "{% trans 'Paiement non effectué' %}";
+                    swal({
+                        title: "{% trans 'Erreur' %} !",
+                        text: textreturn,
+                        type: "error",
+                        showCancelButton: false,
+                        confirmButtonColor: "#7380ec",
+                        confirmButtonText: "oK",
+                        cancelButtonText: "No, cancel plx!",
+                        closeOnConfirm: true,
+                        closeOnCancel: true
+                    });
+                }else{
+                    var textreturn = "{% trans 'Paiement effectué' %}";
+                    swal({
+                        title: "{% trans 'Succès' %} !",
+                        text: textreturn,
+                        type: "success",
+                        showCancelButton: false,
+                        confirmButtonColor: "#7380ec",
+                        confirmButtonText: "oK",
+                        cancelButtonText: "No, cancel plx!",
+                        closeOnConfirm: true,
+                        closeOnCancel: false
+                    }, function (isConfirm) {
+                        if (isConfirm) {
+                            location.reload();
+                        }
+                    });
+                }
+                
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        });
+        
+        //alert(typetransaction);
+        
+    });
+</script>
+<script>
+    function checkout() {
+        var montant_pay = $('#montant_pay').val();
+        CinetPay.setConfig({
+            apikey: '197638741462d150d56944b6.60686606',//   YOUR APIKEY
+            site_id: '682839',//YOUR_SITE_ID
+            notify_url: 'https://tech-agence.net',
+            mode: 'SANDBOX'
+        });
+        CinetPay.getCheckout({
+            transaction_id: Math.floor(Math.random() * 100000000).toString(), // YOUR TRANSACTION ID
+            amount: montant_pay,
+            currency: 'XOF',
+            channels: 'ALL',
+            description: 'Test de paiement',   
+             //Fournir ces variables pour le paiements par carte bancaire
+            customer_name:"Joe",//Le nom du client
+            customer_surname:"Down",//Le prenom du client
+            customer_email: "down@test.com",//l'email du client
+            customer_phone_number: "088767611",//l'email du client
+            customer_address : "BP 0024",//addresse du client
+            customer_city: "Antananarivo",// La ville du client
+            customer_country : "CM",// le code ISO du pays
+            customer_state : "CM",// le code ISO l'état
+            customer_zip_code : "06510", // code postal
+
+        });
+        CinetPay.waitResponse(function(data) {
+            if (data.status == "REFUSED") {
+                swal({
+                    title: "{% trans 'Erreur' %} !",
+                    text: "Votre paiement a échoué. Si votre compte a été débité, veuillez contacter le support.",
+                    type: "error",
+                    showCancelButton: false,
+                    confirmButtonColor: "#7380ec",
+                    confirmButtonText: "oK",
+                    cancelButtonText: "No, cancel plx!",
+                    closeOnConfirm: true,
+                    closeOnCancel: false
+                }, function (isConfirm) {
+                    if (isConfirm) {
+                        location.reload();
+                    }
+                });
+            } else if (data.status == "ACCEPTED") {
+                swal({
+                    title: "{% trans 'Succès' %} !",
+                    text: "Votre paiement a été effectué avec succès",
+                    type: "success",
+                    showCancelButton: false,
+                    confirmButtonColor: "#7380ec",
+                    confirmButtonText: "oK",
+                    cancelButtonText: "No, cancel plx!",
+                    closeOnConfirm: true,
+                    closeOnCancel: false
+                }, function (isConfirm) {
+                    if (isConfirm) {
+                        location.reload();
+                    }
+                });
+            }
+        });
+        CinetPay.onError(function(data) {
+            console.log(data);
+        });
+    }
+
+</script>
+{% endblock js %}

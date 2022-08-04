@@ -1,0 +1,141 @@
+{% extends 'gimmo/base.html' %}{% load i18n %}{% load static %}
+{% block css %}
+<link rel="stylesheet" href="{% static '/gimmo/css/modal.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/form.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/responsivebox.css' %}">
+{% endblock css %}
+{% block title %}{% trans "EMPLOYE" %}{% endblock title %}
+{% block content %}
+        <main>
+            <h1>Employe</h1>
+            <div class="list-btn">
+                <a href="{% url 'newemploye' %}" class="a-button" style="--clr:#7380ec;">
+                    <span class="material-icons-sharp">
+                        add
+                        </span>
+                    {% trans "Nouveau" %}
+                </a>
+                <a href="{% url 'pdfemploye' %}" class="a-button" style="--clr:#e91919;">
+                    <span class="material-icons-sharp">
+                        text_snippet
+                        </span>
+                    {% trans "Export pdf" %}
+                </a>
+            </div>
+            <!--CARD-->
+            <div class="main-body">
+                <div class="recent-orders">
+                    <h2>{% trans "Liste" %}</h2>
+                    <table id="table_id">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>ID</th>
+                                <th>{% trans "Employé" %}</th>
+                                <th>{% trans "Fonction" %}</th>
+                                <th>{% trans "Contact" %}</th>
+                                <th>{% trans "Statut" %}</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>{% load humanize %}
+                            {% for un_employe in liste_employe %}
+                            <tr>
+                                <td>{{forloop.counter}}</td>
+                                <td>{{un_employe.user.username}}</td>
+                                <td>{{un_employe.nom|upper}} {{ un_employe.prenoms }}</td>
+                                <td>{{ un_employe.profession }}</td>
+                                <td>{{ un_employe.tel }}</td>
+                                <td>
+                                    {% if un_employe.d1 == 1 %}
+                                      <span class="success">Actif</span>
+                                    {% else %}
+                                        <span class="danger">Inactif</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="action-btn">
+                                        <span onclick="showInfo('{{un_employe.idpub}}');" class="bg-primary" data-toolpit="yes" toolpit-text="{% trans 'Plus de détails' %}">
+                                            <span class="material-icons-sharp">
+                                                visibility
+                                            </span>
+                                        </span>
+                                        <a href="{% url 'eemploye' un_employe.idpub %}" class="bg-info-dark" data-toolpit="yes" toolpit-text="{% trans 'Modifier les informations' %}">
+                                            <span class="material-icons-sharp">
+                                                edit_note
+                                            </span>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!--END TABLE-->
+        </main>
+{% endblock content %}    
+{% block js %}
+     
+<div class="modal lg-modal showmodal1" id="modal-hs">
+    <div class="content">
+        <div class="modal-header">
+            <div class="title">Employé</div>
+            <div class="close" onclick="showModal('showmodal1');">
+                <span class="material-icons-sharp">
+                    close
+                </span>
+            </div>
+        </div>
+        <div class="modal-body">
+        </div>
+        <div class="modal-footer">
+            <div class="list-btn">
+                <button type="button" onclick="showModal('showmodal1');"  class="a-button" style="--clr:#e91919;">
+                    {% trans "Fermer" %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<script>
+    //$(document).ready(function () {
+    //    $('#table_id').DataTable();
+    //});
+    $(document).ready(function () {
+        //var table = $('#myTable2custom').DataTable();
+        //$('#myTable2custom').DataTable().search('12').draw();
+        $('#table_id').DataTable({
+            "searching":true,
+            "padding":true,
+            "order":[[0,"asc"]],
+            "ordering":true,
+            dom: 'lBfrtip',
+            buttons: [
+                'pdf',
+                'print'
+            ]
+        });
+    });
+</script>
+
+<script>
+    function showInfo(pk){
+        $.ajax({
+            url: "{% url 'infoEmploye' %}",
+            data: {
+                'id': pk
+            },
+            dataType: 'json',
+            success: function(data) {
+                if (data) {
+                    $('.modal-body').html(data.un_employe);
+                    showModal('showmodal1');
+                }
+            }
+        });
+    }
+</script>
+{% endblock js %}

@@ -1,0 +1,153 @@
+{% extends 'gimmo/base.html' %}{% load i18n %}{% load static %}
+{% block css %}
+<link rel="stylesheet" href="{% static '/gimmo/css/modal.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/form.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/responsivebox.css' %}">
+{% endblock css %}
+{% block title %}{% trans "BIEN" %}{% endblock title %}
+{% block content %}
+        <main>
+            <h1>Biens immobiliers</h1>
+            <div class="list-btn">
+                {% if 'PR' in request.user.username or 'LO' in request.user.username %}
+                                      
+                {% else %}
+                <a href="{% url 'newbien' %}" class="a-button" style="--clr:#7380ec;">
+                    <span class="material-icons-sharp">
+                        add
+                        </span>
+                    {% trans "Nouveau" %}
+                </a>
+                {% endif %}
+                <a href="{% url 'pdfbien' %}" class="a-button" style="--clr:#e91919;">
+                    <span class="material-icons-sharp">
+                        text_snippet
+                        </span>
+                    {% trans "Export pdf" %}
+                </a>
+                
+            </div>
+            <!--CARD-->
+            <!--END CARD-->
+            <!--TABLE-->
+            <div class="recent-orders">
+                <h2>{% trans "Liste" %}</h2>
+                <table id="table_id">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>{% trans "Désignation" %}</th>
+                            <th>{% trans "Type" %}</th>
+                            <th>{% trans "Etat" %}</th>
+                            <th>{% trans "Valeur" %}</th>
+                            <th>{% trans "Propriétaire" %}</th>
+                            <th>{% trans "Actions" %}</th>
+                        </tr>
+                    </thead>
+                    <tbody>{% load humanize %}
+                        {% for un_bien in liste_bien %}
+                        <tr>
+                            <td data-thead="#">{{ forloop.counter }}</td>
+                            <td data-thead="Désignation">{{un_bien.nom}}</td>
+                            <td data-thead="Type">
+                                {% if un_bien.typebien == 1 %}
+                                    {% trans "Immeuble" %}
+                                {% elif un_bien.typebien == 2 %}
+                                    {% trans "Maison basse" %}
+                                {% elif un_bien.typebien == 3 %}
+                                    {% trans "Duplex" %}
+                                {% elif un_bien.typebien == 4 %}
+                                    {% trans "Villa" %}
+                                {% elif un_bien.typebien == 5 %}
+                                    {% trans "Appartement" %}
+                                {% elif un_bien.typebien == 6 %}
+                                    {% trans "Terrain" %}
+                                {% else %}
+                                    {% trans "Autre" %}
+                                {% endif %}
+                            </td>
+                            <td data-thead="Etat">
+                                {% if un_bien.vente == 1 %}
+                                  {% trans "En vente" %}
+                                {% else %}
+                                    {% trans "En location" %}
+                                {% endif %}
+                                
+                            </td>
+                            <td data-thead="Valeur">{{un_bien.valeur}}</td>
+                            <td data-thead="Propriétaire">{{un_bien.proprietaire.nom|upper}} {{un_bien.proprietaire.prenom}}</td>
+                            <td data-thead="Actions">
+                                <div class="action-btn">
+                                    <span onclick="showInfo('{{un_bien.idpub}}');" class="bg-primary" data-toolpit="yes" toolpit-text="{% trans 'Plus de détails' %}">
+                                        <span class="material-icons-sharp">
+                                            visibility
+                                        </span>
+                                    </span>
+                                    {% if 'PR' in request.user.username or 'LO' in request.user.username %}
+                                      
+                                    {% else %}
+                                    
+                                    <a href="{% url 'ebien' un_bien.idpub %}" class="bg-info-dark" data-toolpit="yes" toolpit-text="{% trans 'Modifier les informations' %}">
+                                        <span class="material-icons-sharp">
+                                            edit_note
+                                        </span>
+                                    </a>
+                                      
+                                    {% endif %}
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!--END TABLE-->
+        </main>
+{% endblock content %}    
+{% block js %}
+   
+<div class="modal lg-modal showmodal1" id="modal-hs">
+    <div class="content">
+        <div class="modal-header">
+            <div class="title">Bien</div>
+            <div class="close" onclick="showModal('showmodal1');">
+                <span class="material-icons-sharp">
+                    close
+                </span>
+            </div>
+        </div>
+        <div class="modal-body">
+        </div>
+        <div class="modal-footer">
+            <div class="list-btn">
+                <button type="button" onclick="showModal('showmodal1');"  class="a-button" style="--clr:#e91919;">
+                    {% trans "Fermer" %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#table_id').DataTable();
+    });
+</script>
+
+<script>
+    function showInfo(pk){
+        $.ajax({
+            url: "{% url 'infoBien' %}",
+            data: {
+                'id': pk
+            },
+            dataType: 'json',
+            success: function(data) {
+                if (data) {
+                    $('.modal-body').html(data.un_bien);
+                    showModal('showmodal1');
+                }
+            }
+        });
+    }
+</script>
+{% endblock js %}

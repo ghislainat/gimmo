@@ -1,0 +1,250 @@
+<!DOCTYPE html>{% load static%}{% load i18n %} {% load ghis %} {% load humanize %}
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>{{ filenom }}</title>
+    
+    <style>
+        @page {
+            size: a4 portrait;
+        }
+
+        #invoice-POS {
+            box-shadow: 0 0 1in -0.25in rgba(0, 0, 0, 0.5);
+            padding: 2mm;
+            margin: 0 auto;
+            width: 88mm;
+            background: #FFF;
+        }
+        
+        #top,
+        #mid,
+        #botk {
+            /* Targets all id with 'col-' */
+            border-bottom: 1px solid #EEE;
+        }
+        
+        #top {
+            min-height: 100px;
+        }
+        
+        #mid {
+            min-height: 80px;
+        }
+        
+        #bot {
+            min-height: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="invoice-POS">
+        <div id="top">
+            <table>
+                <tr style="border: 1px solid transparent;">
+                    <td align="center" colspan="4" style="border: none;">
+                        <div class="">
+                            <img style="width:100px;height:100px;border-radius:50%;" src="{{ etablissement.logo.path }}"><br/><br/>
+                            <span style="font-size: 30px;color:black;font-weight:bold;font-style:italic;">{{ etablissement.raisonsocial }}</span><br/>
+                            <span>{% trans 'Adresse' %} : {{ etablissement.adresse }}</span><br/>
+                            <span>(00228) {{ etablissement.tel }} / {{ etablissement.telfixe }} / {{ etablissement.email }}</span>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div><br/>
+        <div id="mid">
+            <table style="width:100%;padding:0;margin:0;background-color:#f7f7f7;">
+                <thead>
+                    <tr style="width: 100%;background-color:#fff;">
+                        <td colspan="4" style="border-left:none;border-right:none;text-align:center;font-size:14px;font-weight:bold;">LOCATAIRE: {{ un_locataire.nom|upper }} {{ un_locataire.prenom }}</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="width:150px;height:180px;background-color:#f7f7f7;text-align:center;" rowspan="4">
+                            {% if not un_locataire.photo %}
+                            <img src="{{ etablissement.logo.path }}" style="width: 110px; height: 120px;" />
+                            {% else %}
+                            <img src="{{ un_locataire.photo.path }}" style="width: 110px; height: 120px;" />
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-left:40px;padding-top:10px;">
+                            <span style="font-size:12px;">Civilité</span><br />
+                            <span style="color:black;" class="sexe">{{ un_locataire.civilite }}</span>
+                        </td>
+                        <td style="padding-left:40px;padding-top:10px;">
+                            <span style="font-size:12px;">Nom</span><br/>
+                            <span style="color:black;" class="nom">{{ un_locataire.nom|upper }}</span>
+                        </td>
+                        <td style="padding-left:40px;padding-top:10px;">
+                            <span style="font-size:12px;">Prénom</span><br />
+                            <span style="color:black;" class="prenom">{{ un_locataire.prenom }}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-left:40px;padding-top:10px;">
+                            <span style="font-size:12px;">Date naissance</span><br />
+                            <span style="color:black;" class="daten">{{ un_locataire.datenaiss|naturalday }}</span>
+                        </td>
+                        <td style="padding-left:40px;padding-top:10px;">
+                            <span style="font-size:12px;">Profession</span><br />
+                            <span style="color:black;" class="matricule">{{ un_locataire.profession }}</span>
+                        </td>
+                        <td style="padding-left:40px;padding-top:10px;">
+                            <span style="font-size:12px;">Lieu de travail</span><br />
+                            <span style="color:black;" class="nationalite">{{ un_locataire.lieutaf }}</span>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="padding-left:40px;padding-top:10px;">
+                            <div class="inp">
+                                <span style="font-size:12px;">Nature de la pièce</span><br />
+                                <span style="color:black;" class="nume">{{ un_locataire.naturepiece }}</span>
+                            </div>
+                        </td>
+                        <td style="padding-left:40px;padding-top:10px;">
+                            <div class="inp">
+                                <span style="font-size:12px;">Numéro de la pièce</span><br />
+                                <span style="color:black;" class="emaile">{{ un_locataire.numpiece }}</span>
+                            </div>
+                        </td>
+                        <td style="padding-left:40px;padding-top:10px;">
+                            <div class="inp">
+                                <span style="font-size:12px;">Lieu de délivrance</span><br />
+                                <span style="color:black;" class="spec">{{ un_locataire.lieudelivrance }}</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr>
+                        <td></td>
+                        <td style="padding-left:40px;padding-top:10px;">
+                            <div class="inp">
+                                <span style="font-size:12px;">Date délivrance</span><br />
+                                <span style="color:black;" class="pseudo">{{ un_locataire.datedelivrance }}</span>
+                            </div>
+                        </td>
+                        <td style="padding-left:40px;padding-top:10px;">
+                            <div class="inp">
+                                <span style="font-size:12px;">Date d'expiration</span><br />
+                                <span style="color:black;" class="mdp">{{un_locataire.dateexpir}}</span>
+                            </div>
+                        </td>
+                        <td style="padding-left:40px;padding-top:10px;">
+                            <div class="inp">
+                                <span style="font-size:12px;">Adresse</span><br />
+                                <span style="color:black;" class="spec">{{ un_locataire.adresse }}</span>
+                            </div>
+                        </td>
+                    </tr>
+                                  
+                    <tr>
+                        <td style="padding-left:40px;padding-top:10px;">
+                            <div class="inp">
+                                <span style="font-size:12px;">Téléphone</span><br />
+                                <span style="color:black;" class="spec">{{ un_locataire.tel }}</span>
+                            </div>
+                        </td>
+                        <td style="padding-left:40px;padding-top:10px;">
+                            <div class="inp">
+                                <span style="font-size:12px;">Personne à prevenir</span><br />
+                                <span style="color:black;" class="spec">{{ un_locataire.nomu|upper }} {{ un_locataire.prenomsu|upper }}</span>
+                            </div>
+                        </td>
+                        <td style="padding-left:40px;padding-top:10px;">
+                            <div class="inp">
+                                <span style="font-size:12px;">Téléphone</span><br />
+                                <span style="color:black;" class="spec">{{ un_locataire.contactu }}</span>
+                            </div>
+                        </td>
+                        
+                        <td style="padding-left:40px;padding-top:10px;">
+                            <div class="inp">
+                                <span style="font-size:12px;">E-mail</span><br />
+                                <span style="color:black;" class="pseudo">{{ un_locataire.user.email }}</span>
+                            </div>
+                        </td>
+                    </tr>
+                    <tr  style="background-color:#fff;">
+                        <td style="padding-left:40px;padding-top:10px;text-align: center;" colspan="4">
+                             <div class="inp">
+                                 <span style="font-size:12px;">Informations sur l'entreprise</span>
+                             </div>
+                         </td>
+                     </tr>
+                    <tr>
+                        <td style="padding-left:40px;padding-top:10px;text-align: center;">
+                            <div class="inp">
+                                <span style="font-size:12px;">Raison sociale</span><br />
+                                <span style="color:black;" class="mdp">{{ un_locataire.raisonsocial }}</span>
+                            </div>
+                        </td>
+                        <td style="padding-left:40px;padding-top:10px;text-align: center;">
+                            <div class="inp">
+                                <span style="font-size:12px;">Forme juridique</span><br />
+                                <span style="color:black;" class="mdp">{{ un_locataire.formejuridique }}</span>
+                            </div>
+                        </td>
+                        <td style="padding-left:40px;padding-top:10px;text-align: center;">
+                            <div class="inp">
+                                <span style="font-size:12px;">Compte contribuable</span><br />
+                                <span style="color:black;" class="mdp">{{ un_locataire.comptecontribuable }}</span>
+                            </div>
+                        </td>
+                        <td style="padding-left:40px;padding-top:10px;text-align: center;">
+                            <div class="inp">
+                                <span style="font-size:12px;">Régistre commerce</span><br />
+                                <span style="color:black;" class="mdp">{{ un_locataire.registrecommerce }}</span>
+                            </div>
+                        </td>
+    
+                    </tr>
+                    <tr>
+                        <td style="padding-left:40px;padding-top:10px;text-align: center;">
+                             <div class="inp">
+                                 <span style="font-size:12px;">Secteur d'activité</span><br />
+                                 <span style="color:black;" class="spec">{{ un_locataire.secteur }}</span>
+                             </div>
+                         </td>
+                        <td style="padding-left:40px;padding-top:10px;text-align: center;">
+                            <div class="inp">
+                                <span style="font-size:12px;">Siège social</span><br />
+                                <span style="color:black;" class="mdp">{{ un_locataire.siege }}</span>
+                            </div>
+                        </td>
+                        <td style="padding-left:40px;padding-top:10px;text-align: center;">
+                            <div class="inp">
+                                <span style="font-size:12px;">Adresse</span><br />
+                                <span style="color:black;" class="mdp">{{ un_locataire.adresseentre }}</span>
+                            </div>
+                        </td>
+                        <td style="padding-left:40px;padding-top:10px;text-align: center;">
+                            <div class="inp">
+                                <span style="font-size:12px;">Contact</span><br />
+                                <span style="color:black;" class="mdp">{{ un_locataire.contactentre }}</span>
+                            </div>
+                        </td>
+    
+                    </tr>
+                     <tr>
+                        <td style="padding-left:40px;padding-top:10px;text-align: center;" colspan="4">
+                             <div class="inp">
+                                 <span style="font-size:12px;">Date création de compte</span><br />
+                                 <span style="color:black;" class="spec">{{ un_locataire.creation|naturalday }}</span>
+                             </div>
+                         </td>
+                     </tr>
+                </tbody>
+                </table>
+        </div>
+        <!--End InvoiceBot-->
+    </div>
+    <!--End Invoice-->
+
+</body>
+
+</html>

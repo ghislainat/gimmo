@@ -1,0 +1,332 @@
+{% extends 'gimmo/base.html' %}{% load i18n %} {% load ghis %}{% load humanize %}
+{% block css %}{% endblock css %}
+{% block title %}{% trans "ACCUEIL" %}{% endblock title %}
+{% block content %}
+        <main>
+            <h1>Accueil</h1>
+            <div class="date">
+                <span>
+                    {% if diff_in_hours < 0.1 %}
+                        Logiciel expiré <b><a href="{% url 'pay' %}">abonnement</a></b>
+                    {% else %}
+                        Expire dans <b>{{ diff_in_hours}}</b> Jours <b><a href="{% url 'pay' %}">abonnement</a></b>
+                    {% endif %}
+                </span>
+                <!--<input type="date" name="" id="">-->
+            </div>
+            {% if request.user.employe.d13 == 1 or request.user.is_staff  %}
+            <!--CARD-->
+            <div class="insights">
+                <div class="sales">
+                    <span class="material-icons-sharp" style="--clr:#5168ec;">
+                        swap_horiz
+                    </span>
+                    <div class="middle">
+                        <div class="left">
+                            <h3>Factures générées</h3>
+                            <h1>{{facture_gene|intcomma}}</h1>
+                        </div>
+                        <div class="progress">
+                            <svg>
+                                <circle cx="38" cy="38" r="36" style="--clr:#5168ec;--vle:100;"></circle>
+                            </svg>
+                            <div class="number">
+                                <p>100 %</p>
+                            </div>
+                        </div>
+                    </div>
+                    <small class="text-muted">Facture {{mois_encours}}</small>
+                </div>
+
+                <div class="sales">
+                    <span class="material-icons-sharp" style="--clr:#9cec51;">
+                        done_all
+                    </span>
+                    <div class="middle">
+                        <div class="left">
+                            <h3>Factures payées</h3>
+                            <h1>{{facture_paye|intcomma}}</h1>
+                        </div>
+                        <div class="progress">
+                            <svg>
+                                <circle cx="38" cy="38" r="36" style="--clr:#9cec51;--vle:{{percentage_paye}};"></circle>
+                            </svg>
+                            <div class="number">
+                                <p>{{percentage_paye}} %</p>
+                            </div>
+                        </div>
+                    </div>
+                    <small class="text-muted">Facture {{mois_encours}}</small>
+                </div>
+
+                <div class="sales">
+                    <span class="material-icons-sharp" style="--clr:#ec5151;">
+                        remove_done
+                    </span>
+                    <div class="middle">
+                        <div class="left">
+                            <h3>Factues impayées</h3>
+                            <h1>{{facture_imp|intcomma}}</h1>
+                        </div>
+                        <div class="progress">
+                            <svg>
+                                <circle cx="38" cy="38" r="36" style="--clr:#ec5151;--vle:{{percentage_impaye}};"></circle>
+                            </svg>
+                            <div class="number">
+                                <p>{{percentage_impaye}} %</p>
+                            </div>
+                        </div>
+                    </div>
+                    <small class="text-muted">Facture {{mois_encours}}</small>
+                </div>
+            </div>
+
+            <!---->
+            <div class="shortc">
+                <div class="s-box">
+                    <span class="material-icons-sharp" style="--clr:#ffb834;">
+                        hourglass_bottom
+                    </span>
+                    <div class="middle">
+                        <div class="left">
+                            <h3>Dépenses {{mois_encours}}</h3>
+                            <h1>{{depense_du_mois|intcomma}}</h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="s-box">
+                    <span class="material-icons-sharp" style="--clr:#9cec51;">
+                        description
+                    </span>
+                    <div class="middle">
+                        <div class="left">
+                            <h3>Contrats actifs</h3>
+                            <h1>{{contrat_actif|intcomma}}</h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="s-box">
+                    <span class="material-icons-sharp" style="--clr:#ec5151;">
+                        description
+                    </span>
+                    <div class="middle">
+                        <div class="left">
+                            <h3>Contrat inactifs</h3>
+                            <h1>{{contrat_inactif|intcomma}}</h1>
+                        </div>
+                    </div>
+                </div>
+                <div class="s-box">
+                    <span class="material-icons-sharp" style="--clr:#aa0202;">
+                        description
+                    </span>
+                    <div class="middle">
+                        <div class="left">
+                            <h3>Contrats terminés</h3>
+                            <h1>{{contrat_termine|intcomma}}</h1>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!--GRAPH-->
+            <div class="graphBox">
+                <div class="box">
+                    <canvas id="myChartt"></canvas>
+                </div>
+                <div class="box">
+                    <canvas id="myChart"></canvas>
+                </div>
+            </div>
+            <!--END CARD-->
+            <!--TABLE-->
+            <div class="recent-orders">
+                <h2>Paiements récents</h2>
+                <table>
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>ID</th>
+                            <th data-hide="1">Locataire</th>
+                            <th>Montant</th>
+                            <th>Reste</th>
+                            <th data-hide="1">Statut</th>
+                            <th>Date</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {% for une_facture in derniere_facture %}
+                        <tr>
+                            <td>{{forloop.counter}}</td>
+                            <td>{{une_facture.facture.reffacture}}</td>
+                            <td data-hide="1">
+                                {% if une_facture.facture.locataire.raisonsocial == '' %}
+                                    {{une_facture.facture.locataire.nom|upper}} {{ une_facture.facture.locataire.prenom }}
+                                {% else %}
+                                    {{une_facture.facture.locataire.raisonsocial|upper}}
+                                {% endif %}
+                            </td>
+                            <td>{{une_facture.facture.payefacture}}</td>
+                            <td>{{une_facture.facture.restefacture}}</td>
+                            <td data-hide="1">
+                                {% if une_facture.facture.etat == 1 %}
+                                    <span class="success">{% trans "Terminé" %}</span>
+                                {% elif une_facture.facture.etat == 2 %}
+                                    <span class="danger">{% trans "En retard" %}</span>
+                                {% elif une_facture.facture.etat == 3 %}
+                                    <span class="warning">{% trans "En attente" %}</span>
+                                {% else %}
+                                    <span class="warning">{% trans "En cours" %}</span>
+                                {% endif %}
+                            </td>
+                            <td>
+                                {{une_facture.creation|naturalday}}
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+                <a href="{% url 'rapport' %}">Voir plus</a>
+            </div>
+            <!--END TABLE-->
+            {% else %}
+            <!--CARD-->
+            <div class="insights">
+                <div class="sales">
+                    <span class="material-icons-sharp" style="--clr:#5168ec;">
+                        swap_horiz
+                    </span>
+                    <div class="middle">
+                        <div class="left">
+                            <h3>Factures générées</h3>
+                            <h1>{{facture_gene|intcomma}}</h1>
+                        </div>
+                        <div class="progress">
+                            <svg>
+                                <circle cx="38" cy="38" r="36" style="--clr:#5168ec;--vle:100;"></circle>
+                            </svg>
+                            <div class="number">
+                                <p>100 %</p>
+                            </div>
+                        </div>
+                    </div>
+                    <small class="text-muted">Facture {{mois_encours}}</small>
+                </div>
+
+                <div class="sales">
+                    <span class="material-icons-sharp" style="--clr:#9cec51;">
+                        done_all
+                    </span>
+                    <div class="middle">
+                        <div class="left">
+                            <h3>Factures payées</h3>
+                            <h1>{{facture_paye|intcomma}}</h1>
+                        </div>
+                        <div class="progress">
+                            <svg>
+                                <circle cx="38" cy="38" r="36" style="--clr:#9cec51;--vle:{{percentage_paye}};"></circle>
+                            </svg>
+                            <div class="number">
+                                <p>{{percentage_paye}} %</p>
+                            </div>
+                        </div>
+                    </div>
+                    <small class="text-muted">Facture {{mois_encours}}</small>
+                </div>
+
+                <div class="sales">
+                    <span class="material-icons-sharp" style="--clr:#ec5151;">
+                        remove_done
+                    </span>
+                    <div class="middle">
+                        <div class="left">
+                            <h3>Factues impayées</h3>
+                            <h1>{{facture_imp|intcomma}}</h1>
+                        </div>
+                        <div class="progress">
+                            <svg>
+                                <circle cx="38" cy="38" r="36" style="--clr:#ec5151;--vle:{{percentage_impaye}};"></circle>
+                            </svg>
+                            <div class="number">
+                                <p>{{percentage_impaye}} %</p>
+                            </div>
+                        </div>
+                    </div>
+                    <small class="text-muted">Facture {{mois_encours}}</small>
+                </div>
+            </div>
+             <!--GRAPH-->
+             <div class="graphBox">
+                <div class="box">
+                    <canvas id="myChartt"></canvas>
+                </div>
+                <div class="box">
+                    <canvas id="myChart"></canvas>
+                </div>
+            </div>
+            <!--END CARD-->
+
+            <!---->
+            {% endif %}
+        </main>
+{% endblock content %}    
+{% block js %}
+<script>
+    const ctx = document.getElementById('myChart').getContext('2d');
+    const myChart = new Chart(ctx, {
+        type: 'polarArea',
+        data: {
+            labels: ['Dépense {{mois_encours}}', 'F. payées {{mois_encours}}', 'F. impayées {{mois_encours}}'],
+            datasets: [{
+                data: ['{{depense_mois}}', '{{facture_paye_str}}', '{{facture_imp_str}}'],
+                backgroundColor: [
+                    'rgba(255, 99, 132, 1)',
+                    'rgba(54, 162, 235, 1)',
+                    'rgba(255, 206, 86, 1)'
+                ]
+            }]
+        },
+        options: {
+            //scales: {
+            //    y: {
+            //        beginAtZero: true
+            //    }
+            //}
+            responsive: true,
+        }
+    });
+    const ctxx = document.getElementById('myChartt').getContext('2d');
+    const myChartt = new Chart(ctxx, {
+        type: 'bar',
+        data: {
+            labels: ['Jan', 'Fév', 'Mars', 'Avril', 'Mai', 'Juin', 'Jul', 'Aout', 'Sept', 'Oct', 'Nov', 'Déc'],
+            datasets: [{
+                label: 'Bar de paiement mensuel',
+                data: ['{{facture_jan}}', '{{facture_fev}}', '{{facture_mars}}','{{facture_avr}}', '{{facture_mai}}', '{{facture_juin}}','{{facture_juil}}', '{{facture_aout}}', '{{facture_sept}}','{{facture_oct}}', '{{facture_nov}}', '{{facture_dec}}'],
+                backgroundColor: [
+                    'rgba(115, 128, 236, 1)',
+                    'rgba(115, 128, 236, 1)',
+                    'rgba(115, 128, 236, 1)',
+                    'rgba(115, 128, 236, 1)',
+                    'rgba(115, 128, 236, 1)',
+                    'rgba(115, 128, 236, 1)',
+                    'rgba(115, 128, 236, 1)',
+                    'rgba(115, 128, 236, 1)',
+                    'rgba(115, 128, 236, 1)',
+                    'rgba(115, 128, 236, 1)',
+                    'rgba(115, 128, 236, 1)',
+                    'rgba(115, 128, 236, 1)'
+                ]
+            }]
+        },
+        options: {
+            //scales: {
+            //    y: {
+            //        beginAtZero: true
+            //    }
+            //}
+            responsive: true,
+        }
+    });
+</script>
+{% endblock js %}

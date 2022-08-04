@@ -1,0 +1,75 @@
+{% extends 'gimmo/base.html' %}{% load i18n %}{% load static %}
+{% block css %}
+<link rel="stylesheet" href="{% static '/gimmo/css/modal.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/form.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/responsivebox.css' %}">
+{% endblock css %}
+{% block title %}{% trans "PAIEMENT A VENIR" %}{% endblock title %}
+{% block content %}
+        <main>
+            <h1>Paiement à venir</h1>
+            <div class="list-btn">
+                <a href="{% url 'pdfpaiement' %}" class="a-button" style="--clr:#e91919;">
+                    <span class="material-icons-sharp">
+                        text_snippet
+                        </span>
+                    {% trans "Export pdf" %}
+                </a>
+            </div>
+            <!--CARD-->
+            <div class="main-body">
+                <div class="recent-orders">
+                    <h2>{% trans "Liste" %}</h2>
+                    <table id="table_id">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>{% trans "ID Contrat" %}</th>
+                                <th>{% trans "Locataire" %}</th>
+                                <th>{% trans "Locative" %}</th>
+                                <th>{% trans "Frais loyer" %}</th>
+                                <th>{% trans "Frais sur loyer" %}</th>
+                                <th>{% trans "Total" %}</th>
+                                <th>{% trans "Motif" %}</th>
+                                <th>{% trans "Date paiement" %}</th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <th colspan="4">TOTAL</th>
+                                <th class="cl-primary">{{ total_frais_loyer }}</th>
+                                <th class="cl-primary">{{ total_frais_sur_loyer }}</th>
+                                <th class="cl-primary">{{ total }}</th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                        <tbody>{% load humanize %}
+                            {% for une_facture in liste_facture %}
+                            <tr>
+                                <td data-thead="#">{{forloop.counter}}</td>
+                                <td data-thead='{% trans "ID Contrat" %}'>{{une_facture.refcontrat}}</td>
+                                <td data-thead='{% trans "Locataire" %}'>{{une_facture.locataire.nom|upper}} {{une_facture.locataire.prenom}}</td>
+                                <td data-thead='{% trans "Locative" %}'>{{une_facture.locative.reflocative}}</td>
+                                <td data-thead='{% trans "Frais loyer" %}'>{{une_facture.locative.montant}}</td>
+                                <td data-thead='{% trans "Frais sur loyer" %}'>{{une_facture.locative.charge}}</td>
+                                <td data-thead='{% trans "Total" %}'>{{une_facture.locative.charge|add:une_facture.locative.montant}}</td>
+                                <td data-thead='{% trans "Motif" %}'>{% trans "Loyer de " %}{{mois_paiement}}</td>
+                                <td data-thead='{% trans "Date paiement" %}'>{{une_facture.limite}} {{mois_paiement}}</td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!--END TABLE-->
+        </main>
+{% endblock content %}    
+{% block js %}
+
+<script>
+    $(document).ready(function () {
+        $('#table_id').DataTable();
+    });
+</script>
+{% endblock js %}

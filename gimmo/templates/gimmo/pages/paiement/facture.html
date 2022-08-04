@@ -1,0 +1,354 @@
+{% extends 'gimmo/base.html' %}{% load i18n %}{% load static %} {% load ghis %}
+{% block css %}
+<link rel="stylesheet" href="{% static '/gimmo/css/modal.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/form.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/responsivebox.css' %}">
+<script src="https://cdn.cinetpay.com/seamless/main.js"></script>
+{% endblock css %}
+{% block title %}{% trans "FACTURE" %}{{ une_facture.reffacture }}{% endblock title %}
+{% block content %}
+        <main>
+            <h1>Facture {{ une_facture.reffacture }}</h1>
+            <div class="list-btn">
+                <a href="{% url 'paiement' %}" class="a-button" style="--clr:#7380ec;">
+                    <span class="material-icons-sharp">
+                        reply
+                    </span>
+                    {% trans "Retour liste paiement" %}
+                </a>
+                {% if une_facture.etat != 1 %}
+
+                    {% if etat_paiement == 1 %}
+                        {% if un_etablissement.activepro %}
+                            <span onclick="showModal('showmodal1');" class="a-button" style="--clr:#7380ec;">
+                                <span class="material-icons-sharp">
+                                    add
+                                    </span>
+                                {% trans "Payer" %}
+                            </span>
+                        {% endif %}
+
+                    {% elif etat_paiement == 2 %}
+                        {% if un_etablissement.activeloc %}
+                            <span onclick="showModal('showmodal1');" class="a-button" style="--clr:#7380ec;">
+                                <span class="material-icons-sharp">
+                                    add
+                                    </span>
+                                {% trans "Payer" %}
+                            </span>
+                        {% endif %}     
+                    {% else %}
+                        <span onclick="showModal('showmodal1');" class="a-button" style="--clr:#7380ec;">
+                            <span class="material-icons-sharp">
+                                add
+                                </span>
+                            {% trans "Payer" %}
+                        </span>
+                    {% endif %}
+                
+                    
+                {% endif %}
+                <a href="{% url 'exporterfac' une_facture.idpub %}" class="a-button" style="--clr:#e91919;">
+                    <span class="material-icons-sharp">
+                        text_snippet
+                        </span>
+                    {% trans "Export pdf" %}
+                </a>
+            </div>
+            <!--CARD-->
+            <div class="main-body">
+                <div class="recent-orders">
+                    <h2>{% trans "Détail paiement" %}</h2>
+                    <table id="table_id">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>ID</th>
+                                <th>{% trans "Montant total" %}</th>
+                                <th>{% trans "Payé" %}</th>
+                                <th>{% trans "Reste" %}</th>
+                                <th>{% trans "Mode paiement" %}</th>
+                                <th>{% trans "Traité le" %}</th>
+                                <th>{% trans "Statut" %}</th>
+                                <th>{% trans "Actions" %}</th>
+                            </tr>
+                        </thead>
+                        <tfoot>
+                            <tr>
+                                <th colspan="2">TOTAL</th>
+                                <th class="cl-primary">{{ une_facture.totfacture }}</th>
+                                <th class="cl-primary">{{ totalp }}</th>
+                                <th class="cl-primary">{{ totalr }}</th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                                <th></th>
+                            </tr>
+                        </tfoot>
+                        <tbody>{% load humanize %}
+                            {% for une_facture_d in liste_facture_d %}
+                            <tr>
+                                <td>{{forloop.counter}}</td>
+                                <td>{{une_facture_d.reftrans}}</td>
+                                <td>{{une_facture.totfacture}}</td>
+                                <td>{{une_facture_d.paye}}</td>
+                                <td>{{une_facture_d.reste}}</td>
+                                <td>
+                                    {% if une_facture_d.typetrans == 1 %}
+                                        Espèces
+                                    {% elif une_facture_d.typetrans == 2 %}
+                                        Mobile
+                                    {% elif une_facture_d.typetrans == 3 %}
+                                        Bancaire
+                                    {% else %}
+                                        Wallet
+                                    {% endif %}
+                                </td>
+                                <td>{{une_facture_d.creation}}</td>
+                                <td>
+                                    {% if une_facture_d.etat == 1 %}
+                                      <span class="success">{% trans "Succès" %}</span>
+                                    {% else %}
+                                    <span class="danger">{% trans "Erreur" %}</span>
+                                    {% endif %}
+                                </td>
+                                <td>
+                                    <div class="action-btn">
+                                        <a href="{% url 'exporterunefac' une_facture_d.idpub %}" class="bg-info-light">
+                                            <span class="material-icons-sharp" style="color:red;">
+                                                text_snippet
+                                            </span>
+                                        </a>
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!--END TABLE-->
+        </main>
+{% endblock content %}    
+{% block js %}
+
+<div class="modal sm-modal showmodal1" id="modal-hs">
+    <div class="content">
+        <div class="modal-header">
+            <div class="title">Paiement</div>
+            <div class="close" onclick="showModal('showmodal1');">
+                <span class="material-icons-sharp">
+                    close
+                </span>
+            </div>
+        </div>
+        <div class="modal-body">
+            <form action="{% url 'ajxfacture' %}" method="post" id="newform">
+                {% csrf_token %}
+                <div class="row">
+                    <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                        <h4>Facture {{ une_facture.reffacture }}</h4><br>
+                    </div>
+                    <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                        <div class="select_div">
+                            <div class="select_label">{% trans "Type de paiement" %} <span class="required-txt" style="color: red;">*</span></div>
+                            <select name="typepay" id="choixoperation" class="select_field" required>
+                                <option value="1">{% trans "Espèces" %}</option>
+                                <option value="2">{% trans "Mobile" %}</option>
+                                <option value="3">{% trans "Bancaire" %}</option>
+                                <option value="4">{% trans "Wallet" %}</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                        <div class="input_div">
+                            <input type="number" class="input_field" id="input_feild" name=""
+                                placeholder=" " min="0" value="{{une_facture.totfacture|strtoint}}" readonly style="cursor: not-allowed;">
+                            <label for="input_feild" class="input_label">{% trans "Montant Total" %}</label>
+                        </div>
+                    </div>
+                    <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                        <div class="input_div">
+                            <input type="number" class="input_field" id="input_feild" name=""
+                                placeholder=" " min="0" value="{{une_facture.restefacture|strtoint}}"  readonly style="cursor: not-allowed;">
+                            <label for="input_feild" class="input_label">{% trans "Reste à payer" %}</label>
+                        </div>
+                    </div>
+                    <!--<div class="lg-c12 md-c12 sm-c12 xs-c12">
+                        <div class="input_div">-->
+                            <input type="hidden" class="input_field" id="montant_pay" name="montant"
+                                placeholder=" " required min="0" value="{{une_facture.restefacture|strtoint}}" value="0">
+                            <!--<label for="montant_pay" class="input_label">{% trans "Payer" %} <span class="required-txt" style="color: red;">*</span></label>
+                        </div>
+                    </div>-->
+                    <input type="hidden" value="{{ une_facture.idpub }}" name="idpub">
+                </div>
+                <div class="modal-footer">
+                    <div class="list-btn">
+                        <button type="submit" class="a-button" id="payertrans" style="--clr:#7380ec;">
+                            {% trans "Payer" %}
+                        </button>
+                        <button type="button" onclick="showModal('showmodal1');"  class="a-button" style="--clr:#e91919;">
+                            {% trans "Fermer" %}
+                        </button>
+                    </div>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#table_id').DataTable();
+    });
+</script>
+<script>
+    $(document).ready(function(){
+        $("#choixoperation").on('change', function () {
+            var $this = $(this);
+            console.log($this.val());
+            
+            if ($this.val() != 1) {
+                $('#payertrans').attr('type','button');
+                $('#payertrans').attr('onclick','checkout()');
+            }else{
+                $('#payertrans').attr('type','submit');
+                $('#payertrans').removeAttr('onclick');
+            }
+        });
+    });
+</script>
+<script>
+    $("#newform").submit(function(e){
+        var typetransaction = $('#select_field').val();
+        e.preventDefault();
+        swal({
+            title: "{% trans 'En cours' %} !",
+            text: "{% trans 'Veuillez ne pas quitter la page' %}",
+            type: "warning",
+            showCancelButton: false,
+            showConfirmButton : false,
+            confirmButtonColor: "#00BCD4",
+            confirmButtonText: "oK",
+            cancelButtonText: "No, cancel plx!",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        });
+        var formData = new FormData(this);
+        $.ajax({
+            type : "POST",
+            url: $(this).attr("action"),
+            data: formData,
+            dataType: 'json',
+            success: function(data) {                
+                if (data.etat == "2") {
+                    var textreturn = "{% trans 'Paiement non effectué' %}";
+                    swal({
+                        title: "{% trans 'Erreur' %} !",
+                        text: textreturn,
+                        type: "error",
+                        showCancelButton: false,
+                        confirmButtonColor: "#7380ec",
+                        confirmButtonText: "oK",
+                        cancelButtonText: "No, cancel plx!",
+                        closeOnConfirm: true,
+                        closeOnCancel: true
+                    });
+                }else{
+                    var textreturn = "{% trans 'Paiement effectué' %}";
+                    swal({
+                        title: "{% trans 'Succès' %} !",
+                        text: textreturn,
+                        type: "success",
+                        showCancelButton: false,
+                        confirmButtonColor: "#7380ec",
+                        confirmButtonText: "oK",
+                        cancelButtonText: "No, cancel plx!",
+                        closeOnConfirm: true,
+                        closeOnCancel: false
+                    }, function (isConfirm) {
+                        if (isConfirm) {
+                            location.reload();
+                        }
+                    });
+                }
+                
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        });
+        
+        //alert(typetransaction);
+        
+    });
+</script>
+<script>
+    function checkout() {
+        var montant_pay = $('#montant_pay').val();
+        CinetPay.setConfig({
+            apikey: '197638741462d150d56944b6.60686606',//   YOUR APIKEY
+            site_id: '682839',//YOUR_SITE_ID
+            notify_url: 'https://tech-agence.net',
+            mode: 'SANDBOX'
+        });
+        CinetPay.getCheckout({
+            transaction_id: Math.floor(Math.random() * 100000000).toString(), // YOUR TRANSACTION ID
+            amount: montant_pay,
+            currency: 'XOF',
+            channels: 'ALL',
+            description: 'Test de paiement',   
+             //Fournir ces variables pour le paiements par carte bancaire
+            customer_name:"Joe",//Le nom du client
+            customer_surname:"Down",//Le prenom du client
+            customer_email: "down@test.com",//l'email du client
+            customer_phone_number: "088767611",//l'email du client
+            customer_address : "BP 0024",//addresse du client
+            customer_city: "Antananarivo",// La ville du client
+            customer_country : "CM",// le code ISO du pays
+            customer_state : "CM",// le code ISO l'état
+            customer_zip_code : "06510", // code postal
+
+        });
+        CinetPay.waitResponse(function(data) {
+            if (data.status == "REFUSED") {
+                swal({
+                    title: "{% trans 'Erreur' %} !",
+                    text: "Votre paiement a échoué. Si votre compte a été débité, veuillez contacter le support.",
+                    type: "error",
+                    showCancelButton: false,
+                    confirmButtonColor: "#7380ec",
+                    confirmButtonText: "oK",
+                    cancelButtonText: "No, cancel plx!",
+                    closeOnConfirm: true,
+                    closeOnCancel: false
+                }, function (isConfirm) {
+                    if (isConfirm) {
+                        location.reload();
+                    }
+                });
+            } else if (data.status == "ACCEPTED") {
+                swal({
+                    title: "{% trans 'Succès' %} !",
+                    text: "Votre paiement a été effectué avec succès",
+                    type: "success",
+                    showCancelButton: false,
+                    confirmButtonColor: "#7380ec",
+                    confirmButtonText: "oK",
+                    cancelButtonText: "No, cancel plx!",
+                    closeOnConfirm: true,
+                    closeOnCancel: false
+                }, function (isConfirm) {
+                    if (isConfirm) {
+                        location.reload();
+                    }
+                });
+            }
+        });
+        CinetPay.onError(function(data) {
+            console.log(data);
+        });
+    }
+
+</script>
+{% endblock js %}

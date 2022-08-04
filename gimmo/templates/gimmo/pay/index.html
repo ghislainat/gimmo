@@ -1,0 +1,292 @@
+<!doctype html>{% load static %}{% load humanize %}
+<html lang="en">
+
+<head>
+	<title>Login 07</title>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+	<link href="https://fonts.googleapis.com/css?family=Lato:300,400,700,900&display=swap" rel="stylesheet">
+
+	<link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/font-awesome/4.7.0/css/font-awesome.min.css">
+
+	<link rel="stylesheet" href="{% static '/gline/pay/css/style.css' %}">
+	<script src="https://cdn.cinetpay.com/seamless/main.js"></script>
+
+</head>
+
+<body>
+	<section class="ftco-section">
+		<div class="container">
+			<div class="row justify-content-center">
+				<div class="col-md-6 text-center mb-5">
+					<h2 class="heading-section">Login #07</h2>
+				</div>
+			</div>
+			<div class="row justify-content-center">
+				<div class="col-md-12 col-lg-10">
+					<div class="wrap d-md-flex">
+						<div class="text-wrap p-4 p-lg-5 text-center d-flex align-items-center order-md-last">
+							<div class="text w-100">
+								<h2>Abonnement gLine</h2>
+								<p>Vous avez besoin de l'aide ?</p>
+								<a href="#" class="btn btn-white btn-outline-white">AIDE</a>
+							</div>
+						</div>
+						<div class="login-wrap p-4 p-lg-5">
+							<div class="d-flex">
+								<div class="w-100">
+									<div class="tpab">
+										<h3 class="mb-4">Type d'abonnement</h3>
+									</div>
+									<div class="modsup">
+										<h3 class="mb-4">Modules supplémentaires</h3>
+									</div>
+									<div class="finalab">
+										<h3 class="mb-4">Paiement</h3>
+									</div>
+								</div>
+								<!--<div class="w-100">
+									<p class="social-media d-flex justify-content-end">
+										<a href="#"
+											class="social-icon d-flex align-items-center justify-content-center"><span
+												class="fa fa-facebook"></span></a>
+									</p>
+								</div>-->
+							</div>
+							<form action="{% url 'abonnementtab' %}" id="validecommande" class="signin-form">
+								{% csrf_token %}
+								<!--<div class="form-group mb-3">
+									<label class="label" for="name">Username</label>
+									<input type="text" class="form-control" placeholder="Username" required>
+								</div>
+								<div class="form-group mb-3">
+									<label class="label" for="password">Password</label>
+									<input type="password" class="form-control" placeholder="Password" required>
+								</div>-->
+								<div class="tpab">
+									<div class="form-group mb-3">
+										<label class="checkbox-wrap checkbox-primary mb-0">1 mois (11 000 XOF)
+											<input type="radio" name="typeab" value="31" required>
+											<span class="checkmark"></span>
+										</label>
+									</div>
+									<div class="form-group mb-3">
+										<label class="checkbox-wrap checkbox-primary mb-0">6 mois (65 000 XOF)
+											<input type="radio" name="typeab" value="186" required>
+											<span class="checkmark"></span>
+										</label>
+									</div>
+									<div class="form-group mb-3">
+										<label class="checkbox-wrap checkbox-primary mb-0">1 an (130 000 XOF)
+											<input type="radio" name="typeab" value="365" required>
+											<span class="checkmark"></span>
+										</label>
+									</div>
+									<div class="form-group mb-3">
+										<label class="checkbox-wrap checkbox-primary mb-0">5 ans (600 000 XOF)
+											<input type="radio"  name="typeab" value="1826" required>
+											<span class="checkmark"></span>
+										</label>
+									</div>
+								</div>
+								<div class="modsup">
+									<div class="form-group mb-3">
+										<label class="checkbox-wrap checkbox-primary mb-0">Bilingue (1 750 XOF/Mois)
+											<input type="checkbox" name="bilingue" value="1">
+											<span class="checkmark"></span>
+										</label>
+									</div>
+									<div class="form-group mb-3">
+										<label class="checkbox-wrap checkbox-primary mb-0">Multi-etab (1050 XOF/Mois)
+											<input type="checkbox" name="multietab" value="1">
+											<span class="checkmark"></span>
+										</label>
+									</div>
+									<div class="form-group mb-3">
+										<label class="checkbox-wrap checkbox-primary mb-0" style="cursor: not-allowed;">Email pro (indisponible)
+											<input type="checkbox" disabled >
+											<span class="checkmark"></span>
+										</label>
+									</div>
+								</div>
+
+								<div class="finalab">
+									<table style="width: 100%;padding: 5px;">
+										<thead style="background: #f1f1f1;">
+											<tr>
+												<th style="padding-top:10px;padding-bottom:10px;padding-left: 5px;">Libelé</th>
+												<th style="padding-top:10px;padding-bottom:10px;">Durée</th>
+												<th style="padding-top:10px;padding-bottom:10px;text-align: right;padding-right: 5px;">Montant</th>
+											</tr>
+										</thead>
+										<tfoot style="background: #f1f1f1;">
+											<tr>
+												<th style="padding-top:10px;padding-bottom:10px;" colspan="2">TOTAL</th>
+												<th style="padding-top:10px;padding-bottom:10px;text-align: right;padding-right: 5px;" class="totalp">1 000 00</th>
+											</tr>
+										</tfoot>
+										<tbody>
+											<tr style="border-bottom: 1px solid #808080;">
+												<td style="padding-top:10px;padding-bottom:10px;padding-left: 5px;">Abonnement</td>
+												<td  style="padding-top:10px;padding-bottom:10px;" class="abn_type"></td>
+												<td  style="padding-top:10px;padding-bottom:10px;text-align: right;padding-right: 5px;" class="abn_mtt"></td>
+											</tr>
+											<tr  style="border-bottom: 1px solid #808080;">
+												<td  style="padding-top:10px;padding-bottom:10px;padding-left: 5px;">Bilingue</td>
+												<td  style="padding-top:10px;padding-bottom:10px;" class="bil_type"></td>
+												<td  style="padding-top:10px;padding-bottom:10px;text-align: right;padding-right: 5px;" class="bil_mtt"></td>
+											</tr>
+											<tr>
+												<td  style="padding-top:10px;padding-bottom:10px;padding-left: 5px;">Multi-etab</td>
+												<td  style="padding-top:10px;padding-bottom:10px;" class="me_type"></td>
+												<td  style="padding-top:10px;padding-bottom:10px;text-align: right;padding-right: 5px;" class="me_mtt"></td>
+											</tr>
+										</tbody>
+									</table>
+									<br/>
+								</div>
+
+								<div class="form-group">
+									<button type="button" id="suivant_un" class="form-control btn btn-primary submit px-3">Continuer</button>
+									<button type="submit" id="suivant_deux" class="form-control btn btn-primary submit px-3">Continuer</button>
+									<button type="button" id="suivant_trois" class="form-control btn btn-primary submit px-3">Payer</button>
+								</div>
+								<div class="form-group d-md-flex">
+									<!--<div class="w-50 text-left">
+										<label class="checkbox-wrap checkbox-primary mb-0">Remember Me
+											<input type="checkbox" checked>
+											<span class="checkmark"></span>
+										</label>
+									</div>
+									<div class="w-50 text-md-right">
+										<a href="#">Forgot Password</a>
+									</div>-->
+								</div>
+							</form>
+						</div>
+					</div>
+				</div>
+			</div>
+		</div>
+	</section>
+	<input type="hidden" class="payvalue">
+	<script src="{% static '/gline/pay/js/jquery.min.js' %}"></script>
+	<script src="{% static '/gline/pay/js/popper.js' %}"></script>
+	<script src="{% static '/gline/pay/js/bootstrap.min.js' %}"></script>
+	<script src="{% static '/gline/pay/js/main.js' %}"></script>
+	<script>
+		$(document).ready(function(){
+			$('.modsup').hide();
+			$('.finalp').hide();
+			$('.finalab').hide();
+			$('#suivant_deux').hide();
+			$('#suivant_trois').hide();
+
+			$('#suivant_un').click(function(){
+				$('.tpab').hide();
+				$('.modsup').show();
+				$('#suivant_un').hide();
+				$('#suivant_deux').show();
+				//$('#suivant_deux').attr('type','submit');
+			});
+			$('#suivant_deux').click(function(){
+				$('.modsup').hide();
+				$('.tpab').hide();
+			});
+			
+		})
+	</script>
+	<script>
+		$("#validecommande").submit(function (e) {
+			alert('un');
+			e.preventDefault();
+			var form = $(this);
+			var url = $(this).attr("action");
+			$.ajax({
+				type: "POST",
+				url: url,
+				data: form.serialize(),
+				dataType: 'json',
+				success: function (data) {
+					if (data) {
+						$('.abn_type').text(data.typeab);
+						$('.abn_mtt').text(data.tot_abn);
+
+						if(data.totbiling == 0){
+							$('.bil_type').text(0);
+						}else{
+							$('.bil_type').text(data.typeab);
+						}
+						if(data.totmultietab == 0){
+							$('.me_type').text(0);
+						}else{
+							$('.me_type').text(data.typeab);
+						}
+						
+						$('.bil_mtt').text(data.totbiling);
+						$('.me_mtt').text(data.totmultietab);
+						$('.totalp').text(data.totopay+' XOF');
+
+						$('.modsup').hide();
+						$('.finalab').show();
+						$('#suivant_trois').show();
+						$('#suivant_deux').hide();
+						$('.payvalue').val(data.totopay);
+					}
+
+				},
+				error: function (data) {
+					alert('mal');
+				}
+			});
+		});
+	</script>
+	<script>
+		$('#suivant_trois').click(function(){
+			checkout();
+		});
+        function checkout() {
+            CinetPay.setConfig({
+                apikey: '197638741462d150d56944b6.60686606',//   YOUR APIKEY
+                site_id: '682839',//YOUR_SITE_ID
+                notify_url: 'https://tech-agence.net',
+                mode: 'PRODUCTION'
+            });
+            CinetPay.getCheckout({
+                transaction_id: Math.floor(Math.random() * 100000000).toString(),
+                amount: $('.payvalue').val(),
+                currency: 'XOF',
+                channels: 'ALL',
+                description: 'Test de paiement',   
+                 //Fournir ces variables pour le paiements par carte bancaire
+                customer_name:"Joe",//Le nom du client
+                customer_surname:"Down",//Le prenom du client
+                customer_email: "down@test.com",//l'email du client
+                customer_phone_number: "088767611",//l'email du client
+                customer_address : "BP 0024",//addresse du client
+                customer_city: "Antananarivo",// La ville du client
+                customer_country : "CM",// le code ISO du pays
+                customer_state : "CM",// le code ISO l'état
+                customer_zip_code : "06510", // code postal
+
+            });
+            CinetPay.waitResponse(function(data) {
+                if (data.status == "REFUSED") {
+                    if (alert("Votre paiement a échoué")) {
+                        window.location.reload();
+                    }
+                } else if (data.status == "ACCEPTED") {
+                    if (alert("Votre paiement a été effectué avec succès")) {
+                        window.location.reload();
+                    }
+                }
+            });
+            CinetPay.onError(function(data) {
+                console.log(data);
+            });
+        }
+    </script>
+</body>
+
+</html>

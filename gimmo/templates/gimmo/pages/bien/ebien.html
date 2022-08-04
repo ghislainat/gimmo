@@ -1,0 +1,355 @@
+{% extends 'gimmo/base.html' %}{% load i18n %} {% load static %} {% load ghis %}
+{% block css %}
+<link rel="stylesheet" href="{% static '/gimmo/css/modal.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/form.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/responsivebox.css' %}">
+{% endblock css %}
+{% block title %}{% trans "EDITER BIEN" %}{% endblock title %}
+{% block content %}
+<main>
+    <h1>{% trans "Editer bien" %} {{ un_bien.nom}}</h1>
+
+    <div class="list-btn">
+        <a href="{% url 'bien' %}" class="a-button" style="--clr:#7380ec;">
+            <span class="material-icons-sharp">
+                reply
+            </span>
+            {% trans "Retour liste des biens" %}
+        </a>
+    </div>
+    <!--CARD-->
+    <!--END CARD-->
+    <!--TABLE-->
+    <div class="main-body">
+        <form action="{% url 'eajxbien' %}" method="post" id="newform" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="l-card">
+                <div class="card lg-c3 md-c12 sm-c12 xs-c12">
+                    <div class="card-header">
+                        <h2>{% trans "Identification" %}</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="drop-zone" style="cursor: pointer;">
+                            {% if un_bien.photo %}
+                                <span class="drop-zone__prompti"><img style="width: 110px; height: 120px;"
+                                        src="{{ un_bien.photo.url }}">
+                                </span>
+                            {% else %}
+                                <span class="drop-zone__prompti"><i class="material-icons-sharp" style="font-size: 70px;">home_work</i></span>
+                            {% endif %}
+                            <br/>
+                            <span class="drop-zone__prompt">{% trans 'Glisez ou cliquez pour ajouter' %}</span>
+                            <input type="file" name="profile" class="drop-zone__input" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+                <div class="card lg-c9 md-c12 sm-c12 xs-c12">
+                    <div class="card-header">
+                        <h2>
+                            {% trans "Information" %}
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="select_div">
+                                    <div class="select_label">{% trans "Destiné à la vente ?" %} <span class="required-txt" style="color: red;">*</span></div>
+                                    <select name="vente" id="select_field" class="select_field" required>
+                                        {% if un_bien.vente == 1 %}
+                                            <option selected value="1">{% trans "Oui" %}</option>
+                                        {% else %}
+                                            <option selected value="2">{% trans "Non" %}</option>
+                                        {% endif %}
+                                        <option></option>
+                                        <option value="1">{% trans "Oui" %}</option>
+                                        <option value="2">{% trans "Non" %}</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" name="numlot" value="{{ un_bien.numlot|strtoint}}" id="input_feild" placeholder=" " required>
+                                    <label for="input_feild" class="input_label">{% trans "N° Lot" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+    
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="text" class="input_field" name="lot" value="{{ un_bien.lot}}" id="input_feild" placeholder=" " required>
+                                    <label for="input_feild" class="input_label">{% trans "Lot" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="text" class="input_field" id="input_feild" name="titrefoncier" placeholder=" " value="{{ un_bien.titrefoncier}}" required>
+                                    <label for="input_feild" class="input_label">{% trans "Titre foncier" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" id="input_feild" name="superficie"
+                                        placeholder=" " value="{{ un_bien.superficie|strtoint}}" required>
+                                    <label for="input_feild" class="input_label">{% trans "Superficie" %}(m2) <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="text" class="input_field" id="input_feild" value="{{ un_bien.nom}}" name="nombien" placeholder=" " required>
+                                    <label for="input_feild" class="input_label">{% trans "Nom du bien" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="select_div">
+                                    <div class="select_label">{% trans "Type de bien" %} <span class="required-txt" style="color: red;">*</span></div>
+                                    <select name="typebien" id="select_field" class="select_field" required value="{{ un_bien.typebien}}">
+                                        {% if un_bien.typebien == 1 %}
+                                            <option selected value="1">{% trans "Immeuble" %}</option>
+                                        {% elif un_bien.typebien == 2 %}
+                                            <option selected value="2">{% trans "Maison basse" %}</option>
+                                        {% elif un_bien.typebien == 3 %}
+                                            <option selected value="3">{% trans "Duplex" %}</option>
+                                        {% elif un_bien.typebien == 4 %}
+                                            <option selected value="4">{% trans "Villa" %}</option>
+                                        {% elif un_bien.typebien == 5 %}
+                                            <option selected value="5">{% trans "Appartement" %}</option>
+                                        {% elif un_bien.typebien == 6 %}
+                                            <option selected value="6">{% trans "Terrain" %}</option>
+                                        {% else %}
+                                            <option selected value="7">{% trans "Autre" %}</option>                                          
+                                        {% endif %}
+                                        
+                                        <option></option>
+                                        <option value="1">{% trans "Immeuble" %}</option>
+                                        <option value="2">{% trans "Maison basse" %}</option>
+                                        <option value="3">{% trans "Duplex" %}</option>
+                                        <option value="4">{% trans "Villa" %}</option>
+                                        <option value="5">{% trans "Appartement" %}</option>
+                                        <option value="6">{% trans "Terrain" %}</option>
+                                        <option value="7">{% trans "Autre" %}</option>
+                                    </select>
+                                </div>
+                            </div>
+    
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="text" class="input_field" id="input_feild" name="adresse" placeholder=" " required value="{{ un_bien.adresse}}">
+                                    <label for="input_feild" class="input_label">{% trans "Adresse" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="text" class="input_field" id="input_feild" name="ville" placeholder=" " required value="{{ un_bien.ville}}">
+                                    <label for="input_feild" class="input_label">{% trans "Ville" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+    
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="text" class="input_field" id="input_feild" name="quartier" placeholder=" " value="{{ un_bien.quartier}}" required>
+                                    <label for="input_feild" class="input_label">{% trans "Quartier" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+    
+
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" id="input_feild" value="{{ un_bien.valeur|strtoint}}" name="valeur" placeholder=" " required>
+                                    <label for="input_feild" class="input_label">{% trans "Valeur du bien" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+
+                            <!--<div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" name="commission" value="{{ un_bien.commision|strtoint}}" id="input_feild" placeholder=" ">
+                                    <label for="input_feild" class="input_label">{% trans "Commission" %} {% trans "en" %}(%)</label>
+                                </div>
+                            </div>-->
+
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="select_div">
+                                    <div class="select_label">{% trans "Propriétaire" %} <span class="required-txt" style="color: red;">*</span></div>
+                                    <select name="proprietaire" id="select_field" class="select_field" required>
+                                        {% for un_proprietaire in liste_proprietaire %}{% load humanize %}
+                                            {% if un_bien.proprietaire.id == un_proprietaire.id %}
+                                                <option selected value="{{un_proprietaire.id}}">{{un_proprietaire.nom|upper}} {{un_proprietaire.prenom}}</option>
+                                            {% else %}
+                                                <option value="{{un_proprietaire.id}}">{{un_proprietaire.nom|upper}} {{un_proprietaire.prenom}}</option>
+                                            {% endif %}
+                                            
+                                            
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                                <input type="hidden" value="{{ un_bien.idpub }}" name="idpub">
+                            </div>
+
+                        </div>
+                        <div class="list-btn">
+                            <button type="reset" class="a-button" style="--clr:#e91919;">
+                                {% trans "Annuler" %}
+                            </button>
+                            <button type="submit" class="a-button" style="--clr:#7380ec;">
+                                {% trans "Enrégistrer" %}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!--END TABLE-->
+</main>
+{% endblock content %}
+{% block js %}
+<script>
+    $(document).ready(function () {
+        $('#table_id').DataTable();
+    });
+</script>
+<script>
+    $("#newform").submit(function(e){
+        e.preventDefault();
+        swal({
+            title: "{% trans 'En cours' %} !",
+            text: "{% trans 'Veuillez ne pas quitter la page' %}",
+            type: "warning",
+            showCancelButton: false,
+            showConfirmButton : false,
+            confirmButtonColor: "#00BCD4",
+            confirmButtonText: "oK",
+            cancelButtonText: "No, cancel plx!",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        });
+        var formData = new FormData(this);
+        $.ajax({
+            type : "POST",
+            url: $(this).attr("action"),
+            data: formData,
+            dataType: 'json',
+            success: function(data) {                
+                if (data.etat == "2") {
+                    var textreturn = "{% trans 'Bien non édité' %}";
+                    swal({
+                        title: "{% trans 'Erreur' %} !",
+                        text: textreturn,
+                        type: "error",
+                        showCancelButton: false,
+                        confirmButtonColor: "#7380ec",
+                        confirmButtonText: "oK",
+                        cancelButtonText: "No, cancel plx!",
+                        closeOnConfirm: true,
+                        closeOnCancel: true
+                    });
+                }else{
+                    
+                    var textreturn = "{% trans 'Bien édité' %}";
+                    swal({
+                        title: "{% trans 'Succès' %} !",
+                        text: textreturn,
+                        type: "success",
+                        showCancelButton: false,
+                        confirmButtonColor: "#7380ec",
+                        confirmButtonText: "oK",
+                        cancelButtonText: "No, cancel plx!",
+                        closeOnConfirm: true,
+                        closeOnCancel: false
+                    }, function (isConfirm) {
+                        if (isConfirm) {
+                            location.reload();
+                        }
+                    });
+                }
+                
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        });
+    });
+</script>
+
+<script>
+    document.querySelectorAll(".drop-zone__input").forEach((inputElement) => {
+        const dropZoneElement = inputElement.closest(".drop-zone");
+
+        dropZoneElement.addEventListener("click", (e) => {
+            inputElement.click();
+        });
+
+        inputElement.addEventListener("change", (e) => {
+            if (inputElement.files.length) {
+                updateThumbnail(dropZoneElement, inputElement.files[0]);
+            }
+        });
+
+        dropZoneElement.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            dropZoneElement.classList.add("drop-zone--over");
+        });
+
+        ["dragleave", "dragend"].forEach((type) => {
+            dropZoneElement.addEventListener(type, (e) => {
+                dropZoneElement.classList.remove("drop-zone--over");
+            });
+        });
+
+        dropZoneElement.addEventListener("drop", (e) => {
+            e.preventDefault();
+
+            if (e.dataTransfer.files.length) {
+                inputElement.files = e.dataTransfer.files;
+                updateThumbnail(dropZoneElement, e.dataTransfer.files[0]);
+            }
+
+            dropZoneElement.classList.remove("drop-zone--over");
+        });
+    });
+
+    /**
+     * Updates the thumbnail on a drop zone element.
+     *
+     * @param {HTMLElement} dropZoneElement
+     * @param {File} file
+     */
+    function updateThumbnail(dropZoneElement, file) {
+        let thumbnailElement = dropZoneElement.querySelector(".drop-zone__thumb");
+
+        // First time - remove the prompt
+        if (dropZoneElement.querySelector(".drop-zone__prompt")) {
+            dropZoneElement.querySelector(".drop-zone__prompt").remove();
+        }
+        if (dropZoneElement.querySelector(".drop-zone__prompti")) {
+            dropZoneElement.querySelector(".drop-zone__prompti").remove();
+        }
+
+        // First time - there is no thumbnail element, so lets create it
+        if (!thumbnailElement) {
+            thumbnailElement = document.createElement("div");
+            thumbnailElement.classList.add("drop-zone__thumb");
+            dropZoneElement.appendChild(thumbnailElement);
+        }
+
+        thumbnailElement.dataset.label = file.name;
+
+        // Show thumbnail for image files
+        if (file.type.startsWith("image/")) {
+            const reader = new FileReader();
+
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                thumbnailElement.style.backgroundImage = `url('${reader.result}')`;
+            };
+        } else {
+            thumbnailElement.style.backgroundImage = null;
+        }
+    }
+</script>
+{% endblock js %}

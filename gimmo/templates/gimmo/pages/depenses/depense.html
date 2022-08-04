@@ -1,0 +1,217 @@
+{% extends 'gimmo/base.html' %}{% load i18n %}{% load static %} {% load ghis %}{% load humanize %}
+{% block css %}
+<link rel="stylesheet" href="{% static '/gimmo/css/modal.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/form.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/responsivebox.css' %}">
+{% endblock css %}
+{% block title %}{% trans "DEPENSES" %}{% endblock title %}
+{% block content %}
+        <main>
+            <h1>Dépenses sur immobiliers</h1>
+            <div class="list-btn">
+                <a href="{% url 'newdepense' %}" class="a-button" style="--clr:#7380ec;">
+                    <span class="material-icons-sharp">
+                        add
+                        </span>
+                    {% trans "Nouvelle" %}
+                </a>
+                <a href="{% url 'pdfdepense' %}" class="a-button" style="--clr:#e91919;">
+                    <span class="material-icons-sharp">
+                        text_snippet
+                        </span>
+                    {% trans "Export pdf" %}
+                </a>
+                
+            </div>
+            <!--CARD-->
+            <!--END CARD-->
+            <!--TABLE-->
+            <div class="recent-orders">
+                <h2>{% trans "Liste" %}</h2>
+                <table id="table_id">
+                    <thead>
+                        <tr>
+                            <th>#</th>
+                            <th>{% trans "Description" %}</th>
+                            <th>{% trans "Valeur" %}</th>
+                            <th>{% trans "Propriétaire" %}</th>
+                            <th>{% trans "Bien" %}</th>
+                            <th>{% trans "Enrégistrée par" %}</th>
+                            <th>{% trans "Date" %}</th>
+                            <th>{% trans "Actions" %}</th>
+                        </tr>
+                    </thead>
+                    <tfoot>
+                        <tr>
+                            <th colspan="2">TOTAL</th>
+                            <th class="cl-primary">{{ totald }}</th>
+                            <th colspan="5"></th>
+                        </tr>
+                    </tfoot>
+                    <tbody>
+                        {% for une_depense in liste_depense %}
+                        <tr>
+                            <td data-thead="#">{{ forloop.counter }}</td>
+                            <td data-thead="Désignation">{{une_depense.description}}</td>
+                            <td data-thead="Valeur">{{une_depense.valeur}}</td>
+                            <td data-thead="Propriétaire">{{une_depense.proprietaire.nom|upper}} {{une_depense.proprietaire.prenom}}</td>
+                            <td data-thead="Bien">
+                                {{une_depense.bien.nom}}
+                                {% if une_depense.locative != 0 %}
+                                    ({{une_depense.locative|getlocative}})
+                                {% endif %}
+                                
+                            </td>
+                            <td data-thead="Enrégistrée par">{{une_depense.user.username}}</td>
+                            <td data-thead="Date">{{une_depense.creation|naturaltime}}</td>
+                            <td data-thead="Actions">
+                                <div class="action-btn">
+                                    <a href="{% url 'pdfunedepense' une_depense.idpub %}" class="bg-info-light">
+                                        <span class="material-icons-sharp" style="color:red;">
+                                            text_snippet
+                                        </span>
+                                    </a>
+                                    
+                                    <a href="{% url 'edepense' une_depense.idpub %}" class="bg-info-dark" data-toolpit="yes" toolpit-text="{% trans 'Modifier les informations' %}">
+                                        <span class="material-icons-sharp">
+                                            edit_note
+                                        </span>
+                                    </a>
+                                    <span onclick="desDep('{{une_depense.idpub}}');" class="bg-danger" data-toolpit="yes" toolpit-text="{% trans 'Supprimer la dépense' %}">
+                                        <span class="material-icons-sharp">
+                                            delete
+                                        </span>
+                                    </span>
+
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    </tbody>
+                </table>
+            </div>
+            <!--END TABLE-->
+        </main>
+{% endblock content %}    
+{% block js %}
+
+<div class="modal sm-modal showmodala" id="modal-hs">
+    <div class="content">
+        <div class="modal-header">
+            <div class="title">Dépense</div>
+            <div class="close" onclick="showModal('showmodala');">
+                <span class="material-icons-sharp">
+                    close
+                </span>
+            </div>
+        </div>
+        <div class="modal-body">
+        </div>
+        <div class="modal-footer">
+            <form action="{% url 'deldepense' %}" method="POST" id="deleteU">
+                {% csrf_token %}
+                <input type="hidden" name="deldepense" value="" id="deldepense">
+                <div class="list-btn">
+                    <button type="button" onclick="showModal('showmodala');"  class="a-button" style="--clr:#e91919;">
+                        {% trans "Fermer" %}
+                    </button>
+                    <button type="submit" class="a-button" style="--clr:#7380ec;">
+                        {% trans "Confirmer" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    $(document).ready(function () {
+        $('#table_id').DataTable();
+    });
+</script>
+
+<script>
+    $("#deleteU").submit(function(e){
+        e.preventDefault();
+        swal({
+            title: "{% trans 'En cours' %} !",
+            text: "{% trans 'Veuillez ne pas quitter la page' %}",
+            type: "warning",
+            showCancelButton: false,
+            showConfirmButton : false,
+            confirmButtonColor: "#00BCD4",
+            confirmButtonText: "oK",
+            cancelButtonText: "No, cancel plx!",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        });
+        var formData = new FormData(this);
+        $.ajax({
+            type : "POST",
+            url: $(this).attr("action"),
+            data: formData,
+            dataType: 'json',
+            success: function(data) {                
+                if (data.etat == 0) {
+                    var textreturn = "{% trans 'Dépense non supprimée' %}";
+                    swal({
+                        title: "{% trans 'Erreur' %} !",
+                        text: textreturn,
+                        type: "error",
+                        showCancelButton: false,
+                        confirmButtonColor: "#7380ec",
+                        confirmButtonText: "oK",
+                        cancelButtonText: "No, cancel plx!",
+                        closeOnConfirm: true,
+                        closeOnCancel: true
+                    }, function (isConfirm) {
+                        if (isConfirm) {
+                            showModal('showmodala');
+                        }
+                    });
+                }else{
+                    
+                    var textreturn = "{% trans 'Dépense supprimée' %}";
+                    swal({
+                        title: "{% trans 'Succès' %} !",
+                        text: textreturn,
+                        type: "success",
+                        showCancelButton: false,
+                        confirmButtonColor: "#7380ec",
+                        confirmButtonText: "oK",
+                        cancelButtonText: "No, cancel plx!",
+                        closeOnConfirm: true,
+                        closeOnCancel: false
+                    }, function (isConfirm) {
+                        if (isConfirm) {
+                            location.reload();
+                        }
+                    });
+                }
+                
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        });
+    });
+</script>
+
+<script>
+    function desDep(pk){
+        $('#deldepense').val(pk);
+        $.ajax({
+            url: "{% url 'desdepense' %}",
+            data: {
+                'id': pk
+            },
+            dataType: 'json',
+            success: function(data) {
+                if (data) {
+                    $('.modal-body').html(data.text);
+                    showModal('showmodala');
+                }
+            }
+        });
+    }
+</script>
+{% endblock js %}

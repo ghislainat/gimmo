@@ -1,0 +1,118 @@
+<!DOCTYPE html>{% load static%}{% load i18n %} {% load ghis %} {% load humanize %}
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>{{ filenom }}</title>
+    
+    <style>
+        @page {
+            size: a4 portrait;
+        }
+
+        #invoice-POS {
+            box-shadow: 0 0 1in -0.25in rgba(0, 0, 0, 0.5);
+            padding: 2mm;
+            margin: 0 auto;
+            width: 88mm;
+            background: #FFF;
+        }
+        
+        #top,
+        #mid,
+        #botk {
+            /* Targets all id with 'col-' */
+            border-bottom: 1px solid #EEE;
+        }
+        
+        #top {
+            min-height: 100px;
+        }
+        
+        #mid {
+            min-height: 80px;
+        }
+        
+        #bot {
+            min-height: 50px;
+        }
+        td{
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="invoice-POS">
+        <div id="top">
+            <table>
+                <tr style="border: 1px solid transparent;">
+                    <td align="center" colspan="4" style="border: none;">
+                        <div class="">
+                            <img style="width:100px;height:100px;border-radius:50%;" src="{{ etablissement.logo.path }}"><br/><br/>
+                            <span style="font-size: 30px;color:black;font-weight:bold;font-style:italic;">{{ etablissement.raisonsocial }}</span><br/>
+                            <span>{% trans 'Adresse' %} : {{ etablissement.adresse }}</span><br/>
+                            <span>(00228) {{ etablissement.tel }} / {{ etablissement.telfixe }} / {{ etablissement.email }}</span>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div><br/>
+        <div id="mid">
+            <table cellpadding="5">
+                <thead>
+                    <tr style="width: 100%;background-color:#fff;">
+                        <td colspan="2" style="border-left:none;border-right:none;text-align:center;font-size:14px;font-weight:bold;">DEPENSES {{ une_depense.refdep }}</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr>
+                        <td style="border-left:none;border-right:none;font-weight: 600;" align="left">Description</td>
+                        <td style="border-left:none;border-right:none;" align="right">{{une_depense.description}}</td>
+                    </tr>
+                    <tr>
+                        <td style="border-left:none;border-right:none;font-weight: 600;" align="left">Valeur</td>
+                        <td style="border-left:none;border-right:none;" align="right">{{une_depense.valeur}}</td>
+                    </tr>
+                    <tr>
+                        <td style="border-left:none;border-right:none;font-weight: 600;" align="left">Propriétaire</td>
+                        <td style="border-left:none;border-right:none;" align="right">{{une_depense.proprietaire.nom|upper}} {{une_depense.proprietaire.prenom}}</td>
+                    </tr>
+                    <tr>
+                        <td style="border-left:none;border-right:none;font-weight: 600;" align="left">Bien</td>
+                        <td style="border-left:none;border-right:none;" align="right">
+                            {{une_depense.bien.nom}}
+                            {% if une_depense.locative != 0 %}
+                                ({{une_depense.locative|getlocative}})
+                            {% endif %}
+                        </td>
+                    </tr>
+                    <tr>
+                        <td style="border-left:none;border-right:none;font-weight: 600;" align="left">Enrégistrée par</td>
+                        <td style="border-left:none;border-right:none;" align="right">{{une_depense.user.username}}</td>
+                    </tr>
+                    <tr>
+                        <td style="border-left:none;border-right:none;font-weight: 600;" align="left">Date</td>
+                        <td style="border-left:none;border-right:none;" align="right">{{une_depense.creation|naturaltime}}</td>
+                    </tr>
+                </tbody>
+                <tfoot>
+                    <tr style="width: 100%;background-color:#eee;">
+                        <td style="border-left:none;border-right:none;font-weight: 600;" align="left" colspan="2"></td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <!--End InvoiceBot-->
+        <div id="bot">
+            <div style="text-align: center;">
+                <span style="text-align: center;font-size:11px;">Fait le : {{today}} par {{ action }}</span><br/>
+                <span style="text-align: center;font-size:11px;">by <a href="https://tech-agence.net">TECH-AGENCE</a></span>
+            </div>
+        </div>
+    </div>
+    <!--End Invoice-->
+
+</body>
+
+</html>

@@ -1,0 +1,313 @@
+{% extends 'gimmo/base.html' %}{% load i18n %} {% load static %} {% load ghis %}
+{% block css %}
+<link rel="stylesheet" href="{% static '/gimmo/css/modal.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/form.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/responsivebox.css' %}">
+{% endblock css %}
+{% block title %}{% trans "EDITER LOCATIVE" %}{% endblock title %}
+{% block content %}
+<main>
+    <h1>{% trans "Editer locative" %} {{ une_locative.reflocative }}</h1>
+
+    <div class="list-btn">
+        <a href="{% url 'locative' %}" class="a-button" style="--clr:#7380ec;">
+            <span class="material-icons-sharp">
+                reply
+            </span>
+            {% trans "Retour liste locative" %}
+        </a>
+    </div>
+    <!--CARD-->
+    <!--END CARD-->
+    <!--TABLE-->
+    <div class="main-body">
+        <form  action="{% url 'eajxlocative' %}" method="post" id="newform" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="l-card">
+                <div class="card lg-c3 md-c12 sm-c12 xs-c12">
+                    <div class="card-header">
+                        <h2>{% trans "Identification" %}</h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="drop-zone" style="cursor: pointer;">
+                            {% if une_locative.photo %}
+                                <span class="drop-zone__prompti"><img style="width: 110px; height: 120px;"
+                                        src="{{ une_locative.photo.url }}">
+                                </span>
+                            {% else %}
+                                <span class="drop-zone__prompti"><i class="material-icons-sharp" style="font-size: 70px;">meeting_room</i></span>
+                            {% endif %}
+                            <br/>
+                            <span class="drop-zone__prompt">{% trans 'Glisez ou cliquez pour ajouter' %}</span>
+                            <input type="file" name="profile" class="drop-zone__input" style="display: none;">
+                        </div>
+                    </div>
+                </div>
+                <div class="card lg-c9 md-c12 sm-c12 xs-c12">
+                    <div class="card-header">
+                        <h2>
+                            {% trans "Information" %}
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input value="{{ une_locative.reflocative }}" type="text" class="input_field" id="input_feild" name="reflocative" placeholder=" " required>
+                                    <label for="input_feild" class="input_label">{% trans "Référence locative" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="select_div">
+                                    <div class="select_label">{% trans "Type de locative" %} <span class="required-txt" style="color: red;">*</span></div>
+                                    <select name="tplocative" id="select_field" class="select_field" required value="{{ une_locative.typelocative }}">
+                                        {% if une_locative.typelocative == 1 %}
+                                            <option selected value="1">{% trans "Palier" %}</option>
+                                        {% elif une_locative.typelocative == 2 %}
+                                            <option selected value="2">{% trans "Villa" %}</option>
+                                        {% elif une_locative.typelocative == 3 %}
+                                            <option selected value="3">{% trans "Magasin" %}</option>
+                                        {% elif une_locative.typelocative == 4 %}
+                                            <option selected value="4">{% trans "Appartement" %}</option>
+                                        {% else %}
+                                            <option selected value="5">{% trans "Studio" %}</option>
+                                        {% endif %}
+                                        
+                                        <option></option>
+                                        <option value="1">{% trans "Palier" %}</option>
+                                        <option value="2">{% trans "Villa" %}</option>
+                                        <option value="3">{% trans "Magasin" %}</option>
+                                        <option value="4">{% trans "Appartement" %}</option>
+                                        <option value="5">{% trans "Studio" %}</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="select_div">
+                                    <div class="select_label">{% trans "Locative meublée" %} ? <span class="required-txt" style="color: red;">*</span></div>
+                                    <select name="locativem" id="select_field" class="select_field" required value="{{ une_locative.meuble }}">
+                                        {% if une_locative.meuble == 1 %}
+                                            <option selected value="1">{% trans "Non" %}</option>
+                                        {% else %}
+                                            <option selected value="2">{% trans "Oui" %}</option>
+                                        {% endif %}
+                                        
+                                        <option></option>
+                                        <option value="1">{% trans "Non" %}</option>
+                                        <option value="2">{% trans "Oui" %}</option>
+                                    </select>
+                                </div>
+                            </div>
+
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input value="{{ une_locative.montant|strtoint }}" type="number" class="input_field" name="mttloyer" id="input_feild" placeholder=" " required>
+                                    <label for="input_feild" class="input_label">{% trans "Montant du loyer" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+    
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" value="{{ une_locative.charge|strtoint }}" class="input_field" name="chargeloyer" id="input_feild" placeholder=" " required>
+                                    <label for="input_feild" class="input_label">{% trans "Charge sur loyer" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" value="{{ une_locative.nombrepiece|strtoint }}" class="input_field" id="input_feild" name="nbpiece" placeholder=" " required>
+                                    <label for="input_feild" class="input_label">{% trans "Nombre de pièces" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" value="{{ une_locative.superficie|strtoint }}" step="0.001" min="0" class="input_field" id="input_feild" name="superficie" placeholder=" " required>
+                                    <label for="input_feild" class="input_label">{% trans "Superficie" %}(m2) <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="select_div">
+                                    <div class="select_label">{% trans "Bien de la locative" %} <span class="required-txt" style="color: red;">*</span></div>
+                                    <select name="bienapp" id="select_field" class="select_field" required>
+                                        {% for un_bien in liste_bien %}
+                                            {% if un_bien.id == une_locative.bien.id %}
+                                                <option selected value="{{un_bien.id}}">{{un_bien.nom}}</option>
+                                            {% else %}
+                                                <option value="{{un_bien.id}}">{{un_bien.nom}}</option>
+                                            {% endif %}
+                                        {% endfor %}
+                                        
+                                    </select>
+                                </div>
+                            </div>
+                            <input type="hidden" value="{{ une_locative.idpub }}" name="idpub">
+                            
+                        </div>
+                        <div class="list-btn">
+                            <button type="reset" class="a-button" style="--clr:#e91919;">
+                                {% trans "Annuler" %}
+                            </button>
+                            <button type="submit" class="a-button" style="--clr:#7380ec;">
+                                {% trans "Enrégistrer" %}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!--END TABLE-->
+</main>
+{% endblock content %}
+{% block js %}
+<script>
+    $(document).ready(function () {
+        $('#table_id').DataTable();
+    });
+</script>
+
+<script>
+    $("#newform").submit(function(e){
+        e.preventDefault();
+        swal({
+            title: "{% trans 'En cours' %} !",
+            text: "{% trans 'Veuillez ne pas quitter la page' %}",
+            type: "warning",
+            showCancelButton: false,
+            showConfirmButton : false,
+            confirmButtonColor: "#00BCD4",
+            confirmButtonText: "oK",
+            cancelButtonText: "No, cancel plx!",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        });
+        var formData = new FormData(this);
+        $.ajax({
+            type : "POST",
+            url: $(this).attr("action"),
+            data: formData,
+            dataType: 'json',
+            success: function(data) {                
+                if (data.etat == "2") {
+                    var textreturn = "{% trans 'Locative non éditée' %}";
+                    swal({
+                        title: "{% trans 'Erreur' %} !",
+                        text: textreturn,
+                        type: "error",
+                        showCancelButton: false,
+                        confirmButtonColor: "#7380ec",
+                        confirmButtonText: "oK",
+                        cancelButtonText: "No, cancel plx!",
+                        closeOnConfirm: true,
+                        closeOnCancel: true
+                    });
+                }else{
+                    
+                    var textreturn = "{% trans 'Locative éditée' %}";
+                    swal({
+                        title: "{% trans 'Succès' %} !",
+                        text: textreturn,
+                        type: "success",
+                        showCancelButton: false,
+                        confirmButtonColor: "#7380ec",
+                        confirmButtonText: "oK",
+                        cancelButtonText: "No, cancel plx!",
+                        closeOnConfirm: true,
+                        closeOnCancel: false
+                    }, function (isConfirm) {
+                        if (isConfirm) {
+                            location.reload();
+                        }
+                    });
+                }
+                
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        });
+    });
+</script>
+
+<script>
+    document.querySelectorAll(".drop-zone__input").forEach((inputElement) => {
+        const dropZoneElement = inputElement.closest(".drop-zone");
+
+        dropZoneElement.addEventListener("click", (e) => {
+            inputElement.click();
+        });
+
+        inputElement.addEventListener("change", (e) => {
+            if (inputElement.files.length) {
+                updateThumbnail(dropZoneElement, inputElement.files[0]);
+            }
+        });
+
+        dropZoneElement.addEventListener("dragover", (e) => {
+            e.preventDefault();
+            dropZoneElement.classList.add("drop-zone--over");
+        });
+
+        ["dragleave", "dragend"].forEach((type) => {
+            dropZoneElement.addEventListener(type, (e) => {
+                dropZoneElement.classList.remove("drop-zone--over");
+            });
+        });
+
+        dropZoneElement.addEventListener("drop", (e) => {
+            e.preventDefault();
+
+            if (e.dataTransfer.files.length) {
+                inputElement.files = e.dataTransfer.files;
+                updateThumbnail(dropZoneElement, e.dataTransfer.files[0]);
+            }
+
+            dropZoneElement.classList.remove("drop-zone--over");
+        });
+    });
+
+    /**
+     * Updates the thumbnail on a drop zone element.
+     *
+     * @param {HTMLElement} dropZoneElement
+     * @param {File} file
+     */
+    function updateThumbnail(dropZoneElement, file) {
+        let thumbnailElement = dropZoneElement.querySelector(".drop-zone__thumb");
+
+        // First time - remove the prompt
+        if (dropZoneElement.querySelector(".drop-zone__prompt")) {
+            dropZoneElement.querySelector(".drop-zone__prompt").remove();
+        }
+        if (dropZoneElement.querySelector(".drop-zone__prompti")) {
+            dropZoneElement.querySelector(".drop-zone__prompti").remove();
+        }
+
+        // First time - there is no thumbnail element, so lets create it
+        if (!thumbnailElement) {
+            thumbnailElement = document.createElement("div");
+            thumbnailElement.classList.add("drop-zone__thumb");
+            dropZoneElement.appendChild(thumbnailElement);
+        }
+
+        thumbnailElement.dataset.label = file.name;
+
+        // Show thumbnail for image files
+        if (file.type.startsWith("image/")) {
+            const reader = new FileReader();
+
+            reader.readAsDataURL(file);
+            reader.onload = () => {
+                thumbnailElement.style.backgroundImage = `url('${reader.result}')`;
+            };
+        } else {
+            thumbnailElement.style.backgroundImage = null;
+        }
+    }
+</script>
+{% endblock js %}

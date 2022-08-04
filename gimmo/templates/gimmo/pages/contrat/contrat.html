@@ -1,0 +1,289 @@
+{% extends 'gimmo/base.html' %}{% load i18n %}{% load static %}
+{% block css %}
+<link rel="stylesheet" href="{% static '/gimmo/css/modal.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/form.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/responsivebox.css' %}">
+{% endblock css %}
+{% block title %}{% trans "CONTRAT" %}{% endblock title %}
+{% block content %}
+        <main>
+            <h1>Contrat</h1>
+            <div class="list-btn">
+                {% if 'PR' in request.user.username or 'LO' in request.user.username %}
+                                      
+                {% else %}
+                <a href="{% url 'newcontrat' %}" class="a-button" style="--clr:#7380ec;">
+                    <span class="material-icons-sharp">
+                        add
+                        </span>
+                    {% trans "Nouveau" %}
+                </a>
+                {% endif %}
+                <a href="{% url 'pdfcontrat' %}" class="a-button" style="--clr:#e91919;">
+                    <span class="material-icons-sharp">
+                        text_snippet
+                        </span>
+                    {% trans "Export pdf" %}
+                </a>
+            </div>
+            <!--CARD-->
+            <div class="main-body">
+                <div class="recent-orders">
+                    <h2>{% trans "Liste" %}</h2>
+                    <table id="table_id">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>ID</th>
+                                <th>{% trans "Locataire" %}</th>
+                                <th>{% trans "Locative" %}</th>
+                                <th>{% trans "Type contrat" %}</th>
+                                <th>{% trans "Date début" %}</th>
+                                <th>{% trans "Date fin" %}</th>
+                                <th>{% trans "Traité le" %}</th>
+                                <th>{% trans "Statut" %}</th>
+                                <th>{% trans "Prochain paiement" %}</th>
+                                <th>{% trans "Actions" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>{% load humanize %}
+                            {% for un_contrat in liste_contrat %}
+                            <tr>
+                                <td data-thead="#">{{forloop.counter}}</td>
+                                <td data-thead="ID">{{un_contrat.refcontrat}}</td>
+                                <td data-thead="Locataire">
+                                    {% if un_contrat.locataire.raisonsocial == '' %}
+                                        {{un_contrat.locataire.nom|upper}} {{ un_contrat.locataire.prenom }}
+                                    {% else %}
+                                        {{un_contrat.locataire.raisonsocial|upper}}
+                                    {% endif %}
+                                </td>
+                                <td data-thead="Locative">{{un_contrat.locative.reflocative}}</td>
+                                <td data-thead="Type contrat">
+                                    {% if un_contrat.typecontrat == 1 %}
+                                        {% trans "Contrat de bail habitation" %}
+                                    {% else %}
+                                        {% trans "Contrat de bail commercial" %}
+                                    {% endif %}
+                                </td>
+                                <td data-thead="Date début">{{un_contrat.dateentree|naturalday}}</td>
+                                <td data-thead="Date fin">
+                                    {% if un_contrat.datefin == "2021-12-14" %}
+                                        {% trans "INDETERMINEE" %}
+                                    {% else %}
+                                        {{un_contrat.datefin|naturalday}}
+                                    {% endif %}
+                                </td>
+                                <td data-thead="Traité le">{{un_contrat.datesign|naturalday}}</td>
+                                <td data-thead="Statut">
+                                    {% if un_contrat.activecontrat == 1 %}
+                                      <span class="success">{% trans "En cours" %}</span>
+                                    {% elif un_contrat.activecontrat == 2 %}
+                                    <span class="danger">{% trans "Terminé" %}</span>
+                                    {% else %}
+                                    <span class="warning">{% trans "En attente" %}</span>
+                                    {% endif %}
+                                </td>
+                                <td data-thead="Prochain paiement">{{un_contrat.prochainpay|naturalday}}</td>
+                                <td data-thead="Actions">
+                                    <div class="action-btn">
+                                        <span onclick="showInfo('{{un_contrat.idpub}}');" class="bg-primary" data-toolpit="yes" toolpit-text="{% trans 'Plus de détails' %}">
+                                            <span class="material-icons-sharp">
+                                                visibility
+                                            </span>
+                                        </span>
+                                        {% if 'PR' in request.user.username or 'LO' in request.user.username %}
+                                      
+                                        {% else %}
+                                            {% if un_contrat.activecontrat == 1 %}
+                                            <span onclick="closeContrat('{{un_contrat.idpub}}','1');" class="bg-info-dark" data-toolpit="yes" toolpit-text="{% trans 'Mettre fin le contrat' %}">
+                                                <span class="material-icons-sharp">
+                                                    cancel_presentation
+                                                </span>
+                                            </span>
+                                            {% elif un_contrat.activecontrat == 2 %}
+                                            {% else %}
+                                            <a href="{% url 'econtrat' un_contrat.idpub %}" class="bg-info-dark" data-toolpit="yes" toolpit-text="{% trans 'Modifier le contrat' %}">
+                                                <span class="material-icons-sharp">
+                                                    edit_note
+                                                </span>
+                                            </a>
+                                            <span onclick="closeContrat('{{un_contrat.idpub}}','2');" class="bg-danger" data-toolpit="yes" toolpit-text="{% trans 'Supprimer le contrat' %}">
+                                                <span class="material-icons-sharp">
+                                                    delete_forever
+                                                </span>
+                                            </span>
+                                            {% endif %}
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!--END TABLE-->
+        </main>
+{% endblock content %}    
+{% block js %}
+
+<div class="modal lg-modal showmodal1" id="modal-hs">
+    <div class="content">
+        <div class="modal-header">
+            <div class="title">Contrat</div>
+            <div class="close" onclick="showModal('showmodal1');">
+                <span class="material-icons-sharp">
+                    close
+                </span>
+            </div>
+        </div>
+        <div class="modal-body">
+        </div>
+        <div class="modal-footer">
+            <div class="list-btn">
+                <button type="button" onclick="showModal('showmodal1');"  class="a-button" style="--clr:#e91919;">
+                    {% trans "Fermer" %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<div class="modal sm-modal showmodal2" id="modal-hs">
+    <div class="content">
+        <div class="modal-header">
+            <div class="title">Arret Contrat</div>
+            <div class="close" onclick="showModal('showmodal2');">
+                <span class="material-icons-sharp">
+                    close
+                </span>
+            </div>
+        </div>
+        <div class="modal-body">
+        </div>
+        <div class="modal-footer">
+            <form action="{% url 'delContrat' %}" method="POST" id="delContrat">
+                {% csrf_token %}
+                <input type="hidden" name="arretcontratid" id="arretcontratid">
+                <input type="hidden" name="contratobjs" id="contratobjs">
+                <div class="list-btn">
+                    <button type="button" onclick="showModal('showmodal2');"  class="a-button" style="--clr:#e91919;">
+                        {% trans "Fermer" %}
+                    </button>
+                    
+                    <button type="submit" class="a-button" style="--clr:#7380ec;">
+                        {% trans "Confirmer" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+<script>
+    $("#delContrat").submit(function(e){
+        e.preventDefault();
+        swal({
+            title: "{% trans 'En cours' %} !",
+            text: "{% trans 'Veuillez ne pas quitter la page' %}",
+            type: "warning",
+            showCancelButton: false,
+            showConfirmButton : false,
+            confirmButtonColor: "#00BCD4",
+            confirmButtonText: "oK",
+            cancelButtonText: "No, cancel plx!",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        });
+        var formData = new FormData(this);
+        $.ajax({
+            type : "POST",
+            url: $(this).attr("action"),
+            data: formData,
+            dataType: 'json',
+            success: function(data) {                
+                if (data.etat == "2") {
+                    var textreturn = "{% trans 'Contrat non arreté' %}";
+                    swal({
+                        title: "{% trans 'Erreur' %} !",
+                        text: textreturn,
+                        type: "error",
+                        showCancelButton: false,
+                        confirmButtonColor: "#7380ec",
+                        confirmButtonText: "oK",
+                        cancelButtonText: "No, cancel plx!",
+                        closeOnConfirm: true,
+                        closeOnCancel: true
+                    });
+                }else{
+                    
+                    var textreturn = "{% trans 'Contrat arreté' %}";
+                    swal({
+                        title: "{% trans 'Succès' %} !",
+                        text: textreturn,
+                        type: "success",
+                        showCancelButton: false,
+                        confirmButtonColor: "#7380ec",
+                        confirmButtonText: "oK",
+                        cancelButtonText: "No, cancel plx!",
+                        closeOnConfirm: true,
+                        closeOnCancel: false
+                    }, function (isConfirm) {
+                        if (isConfirm) {
+                            location.reload();
+                        }
+                    });
+                }
+                
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('#table_id').DataTable();
+    });
+</script>
+
+<script>
+    function showInfo(pk){
+        $.ajax({
+            url: "{% url 'infoContrat' %}",
+            data: {
+                'id': pk
+            },
+            dataType: 'json',
+            success: function(data) {
+                if (data) {
+                    $('.modal-body').html(data.un_contrat);
+                    showModal('showmodal1');
+                }
+            }
+        });
+    }
+</script>
+
+<script>
+    function closeContrat(pk,objs){
+        $('#arretcontratid').val(pk);
+        $('#contratobjs').val(objs);
+        $.ajax({
+            url: "{% url 'closeContrat' %}",
+            data: {
+                'id': pk,
+                'objs':objs
+            },
+            dataType: 'json',
+            success: function(data) {
+                if (data) {
+                    $('.modal-body').html(data.un_contrat);
+                    showModal('showmodal2');
+                }
+            }
+        });
+    }
+</script>
+{% endblock js %}

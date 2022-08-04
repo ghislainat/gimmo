@@ -1,0 +1,5 @@
+*.sqlite3
+*.pyc
+static_cdn
+media
+gimmo/jobs

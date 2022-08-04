@@ -1,0 +1,432 @@
+{% extends 'gimmo/base.html' %}{% load i18n %}{% load static %} {% load ghis %}
+{% block css %}
+<link rel="stylesheet" href="{% static '/gimmo/css/modal.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/form.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/responsivebox.css' %}">
+{% endblock css %}
+{% block title %}{% trans "LOCATIVE" %}{% endblock title %}
+{% block content %}
+        <main>
+            <h1>Locative</h1>
+            <div class="list-btn">
+                {% if 'PR' in request.user.username or 'LO' in request.user.username %}
+                                      
+                {% else %}
+                <a href="{% url 'newlocative' %}" class="a-button" style="--clr:#7380ec;">
+                    <span class="material-icons-sharp">
+                        add
+                        </span>
+                    {% trans "Nouvelle" %}
+                </a>
+                {% endif %}
+                <a href="{% url 'pdflocative' %}" class="a-button" style="--clr:#e91919;">
+                    <span class="material-icons-sharp">
+                        text_snippet
+                        </span>
+                    {% trans "Export pdf" %}
+                </a>
+            </div>
+            <!--CARD-->
+            <div class="main-body">
+                <div class="recent-orders">
+                    <h2>{% trans "Liste" %}</h2>
+                    <table id="table_id">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>{% trans "Réf locative" %}</th>
+                                <th>{% trans "Localisation" %}</th>
+                                <th>{% trans "Superficie" %}(m2)</th>
+                                <th>{% trans "Type" %}</th>
+                                <th>{% trans "Statut" %}</th>
+                                <th>{% trans "Occupant" %}</th>
+                                <th>{% trans "Montant loyer" %}</th>
+                                <th>{% trans "Charge sur loyer" %}</th>
+                                <th>{% trans "Actions" %}</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            {% for une_locative in liste_locative %}
+                                {% if etat == 1 %}
+                                <tr>
+                                    <td data-thead="#">{{forloop.counter}}</td>
+                                    <td data-thead="Réf locative">{{une_locative.locative__reflocative}}</td>
+                                    <td data-thead="Localisation">{{une_locative.bien__adresse}}, {{une_locative.bien__ville}}, {{une_locative.bien__quartier}}</td>
+                                    <td data-thead="Superficie (m2)">{{une_locative.locative__superficie}}</td>
+                                    <td data-thead="Type">
+                                        {% if une_locative.locative__typelocative == 1 %}
+                                            {% trans "Palier" %}
+                                        {% elif une_locative.locative__typelocative == 2 %}
+                                            {% trans "Villa" %}
+                                        {% elif une_locative.locative__typelocative == 3 %}
+                                            {% trans "Magasin" %}
+                                        {% elif une_locative.locative__typelocative == 4 %}
+                                            {% trans "Appartement" %}
+                                        {% elif une_locative.locative__typelocative == 5 %}
+                                            {% trans "Studio" %}
+                                        {% else %}
+                                            {% trans "Autre" %}
+                                        {% endif %}
+                                    </td>
+                                    <td data-thead="Statut">
+                                        {% if une_locative.locative__etat == 2 %}
+                                          <span class="danger">{% trans "Occupée" %}</span>
+                                        {% elif une_locative.locative__etat == 3 %}
+                                          <span class="warning">{% trans "Réservée" %}</span>
+                                        {% else %}
+                                            <span class="success">{% trans "Libre" %}</span>
+                                        {% endif %}                                    
+                                    </td>
+                                    <td data-thead="Occupant">
+                                        {% if une_locative.locative__etat == 2 %}
+                                            {{une_locative.locative__id|occuplocative}}
+                                        {% elif une_locative.locative__etat == 3 %}
+                                            {{une_locative.locative__id|occuplocative}}
+                                        {% else %}
+                                            Vide
+                                        {% endif %}
+                                    </td>
+                                    <td data-thead="Montant loyer">{{une_locative.locative__montant}}</td>
+                                    <td data-thead="Charge sur loyer">{{une_locative.locative__charge}}</td>
+                                    <td data-thead="Actions">
+                                        <div class="action-btn">
+                                            <span onclick="showInfo('{{une_locative.locative__idpub}}');" class="bg-primary" data-toolpit="yes" toolpit-text="{% trans 'Plus de détails' %}">
+                                                <span class="material-icons-sharp">
+                                                    visibility
+                                                </span>
+                                            </span>
+                                            {% if 'PR' in request.user.username or 'LO' in request.user.username %}
+                                          
+                                            {% else %}
+                                                <a href="{% url 'elocative' une_locative.locative__idpub %}" class="bg-info-dark" data-toolpit="yes" toolpit-text="{% trans 'Modifier les informations' %}">
+                                                    <span class="material-icons-sharp">
+                                                        edit_note
+                                                    </span>
+                                                </a>
+                                                <span onclick="desUser('{{une_locative.locative__idpub}}');" class="bg-danger" data-toolpit="yes" toolpit-text="{% trans 'Modifier les informations' %}">
+                                                    <span class="material-icons-sharp">
+                                                        delete
+                                                    </span>
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% elif etat == 2 %}
+                                <tr>
+                                    <td data-thead="#">{{forloop.counter}}</td>
+                                    <td data-thead="Réf locative">{{une_locative.reflocative}}</td>
+                                    <td data-thead="Localisation">{{une_locative.bien.adresse}}, {{une_locative.bien.ville}}, {{une_locative.bien.quartier}}</td>
+                                    <td data-thead="Superficie (m2)">{{une_locative.superficie}}</td>
+                                    <td data-thead="Type">
+                                        {% if une_locative.typelocative == 1 %}
+                                            {% trans "Palier" %}
+                                        {% elif une_locative.typelocative == 2 %}
+                                            {% trans "Villa" %}
+                                        {% elif une_locative.typelocative == 3 %}
+                                            {% trans "Magasin" %}
+                                        {% elif une_locative.typelocative == 4 %}
+                                            {% trans "Appartement" %}
+                                        {% elif une_locative.typelocative == 5 %}
+                                            {% trans "Studio" %}
+                                        {% else %}
+                                            {% trans "Autre" %}
+                                        {% endif %}
+                                    </td>
+                                    <td data-thead="Statut">
+                                        {% if une_locative.etat == 2 %}
+                                          <span class="danger">{% trans "Occupée" %}</span>
+                                        {% elif une_locative.etat == 3 %}
+                                          <span class="warning">{% trans "Réservée" %}</span>
+                                        {% else %}
+                                            <span class="success">{% trans "Libre" %}</span>
+                                        {% endif %}                                    
+                                    </td>
+                                    <td data-thead="Occupant">
+                                        {% if une_locative.etat == 2 %}
+                                            {{une_locative.id|occuplocative}}
+                                        {% elif une_locative.etat == 3 %}
+                                            {{une_locative.id|occuplocative}}
+                                        {% else %}
+                                            Vide
+                                        {% endif %}
+                                    </td>
+                                    <td data-thead="Montant loyer">{{une_locative.montant}}</td>
+                                    <td data-thead="Charge sur loyer">{{une_locative.charge}}</td>
+                                    <td data-thead="Actions">
+                                        <div class="action-btn">
+                                            <span onclick="showInfo('{{une_locative.idpub}}');" class="bg-primary" data-toolpit="yes" toolpit-text="{% trans 'Plus de détails' %}">
+                                                <span class="material-icons-sharp">
+                                                    visibility
+                                                </span>
+                                            </span>
+                                            {% if 'PR' in request.user.username or 'LO' in request.user.username %}
+                                          
+                                            {% else %}
+                                                <a href="{% url 'elocative' une_locative.idpub %}" class="bg-info-dark" data-toolpit="yes" toolpit-text="{% trans 'Modifier les informations' %}">
+                                                    <span class="material-icons-sharp">
+                                                        edit_note
+                                                    </span>
+                                                </a>
+                                                <span onclick="desUser('{{une_locative.idpub}}');" class="bg-danger" data-toolpit="yes" toolpit-text="{% trans 'Modifier les informations' %}">
+                                                    <span class="material-icons-sharp">
+                                                        delete
+                                                    </span>
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% else %}
+                                <tr>
+                                    <td data-thead="#">{{forloop.counter}}</td>
+                                    <td data-thead="Réf locative">{{une_locative.reflocative}}</td>
+                                    <td data-thead="Localisation">{{une_locative.bien.adresse}}, {{une_locative.bien.ville}}, {{une_locative.bien.quartier}}</td>
+                                    <td data-thead="Superficie (m2)">{{une_locative.superficie}}</td>
+                                    <td data-thead="Type">
+                                        {% if une_locative.typelocative == 1 %}
+                                            {% trans "Palier" %}
+                                        {% elif une_locative.typelocative == 2 %}
+                                            {% trans "Villa" %}
+                                        {% elif une_locative.typelocative == 3 %}
+                                            {% trans "Magasin" %}
+                                        {% elif une_locative.typelocative == 4 %}
+                                            {% trans "Appartement" %}
+                                        {% elif une_locative.typelocative == 5 %}
+                                            {% trans "Studio" %}
+                                        {% else %}
+                                            {% trans "Autre" %}
+                                        {% endif %}
+                                    </td>
+                                    <td data-thead="Statut">
+                                        {% if une_locative.etat == 2 %}
+                                          <span class="danger">{% trans "Occupée" %}</span>
+                                        {% elif une_locative.etat == 3 %}
+                                          <span class="warning">{% trans "Réservée" %}</span>
+                                        {% else %}
+                                            <span class="success">{% trans "Libre" %}</span>
+                                        {% endif %}                                    
+                                    </td>
+                                    <td data-thead="Occupant">
+                                        {% if une_locative.etat == 2 %}
+                                            {{une_locative.id|occuplocative}}
+                                        {% elif une_locative.etat == 3 %}
+                                            {{une_locative.id|occuplocative}}
+                                        {% else %}
+                                            Vide
+                                        {% endif %}
+                                    </td>
+                                    <td data-thead="Montant loyer">{{une_locative.montant}}</td>
+                                    <td data-thead="Charge sur loyer">{{une_locative.charge}}</td>
+                                    <td data-thead="Actions">
+                                        <div class="action-btn">
+                                            <span onclick="showInfo('{{une_locative.idpub}}');" class="bg-primary" data-toolpit="yes" toolpit-text="{% trans 'Plus de détails' %}">
+                                                <span class="material-icons-sharp">
+                                                    visibility
+                                                </span>
+                                            </span>
+                                            {% if 'PR' in request.user.username or 'LO' in request.user.username %}
+                                          
+                                            {% else %}
+                                                <a href="{% url 'elocative' une_locative.idpub %}" class="bg-info-dark" data-toolpit="yes" toolpit-text="{% trans 'Modifier les informations' %}">
+                                                    <span class="material-icons-sharp">
+                                                        edit_note
+                                                    </span>
+                                                </a>
+                                                <span onclick="desUser('{{une_locative.idpub}}');" class="bg-danger" data-toolpit="yes" toolpit-text="{% trans 'Modifier les informations' %}">
+                                                    <span class="material-icons-sharp">
+                                                        delete
+                                                    </span>
+                                                </span>
+                                            {% endif %}
+                                        </div>
+                                    </td>
+                                </tr>
+                                {% endif %}
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!--END TABLE-->
+        </main>
+{% endblock content %}    
+{% block js %}
+   
+<div class="modal lg-modal showmodal1" id="modal-hs">
+    <div class="content">
+        <div class="modal-header">
+            <div class="title">Locative</div>
+            <div class="close" onclick="showModal('showmodal1');">
+                <span class="material-icons-sharp">
+                    close
+                </span>
+            </div>
+        </div>
+        <div class="modal-body">
+        </div>
+        <div class="modal-footer">
+            <div class="list-btn">
+                <button type="button" onclick="showModal('showmodal1');"  class="a-button" style="--clr:#e91919;">
+                    {% trans "Fermer" %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+ 
+<div class="modal sm-modal showmodala" id="modal-hs">
+    <div class="content">
+        <div class="modal-header">
+            <div class="title">Locative</div>
+            <div class="close" onclick="showModal('showmodala');">
+                <span class="material-icons-sharp">
+                    close
+                </span>
+            </div>
+        </div>
+        <div class="modal-body">
+        </div>
+        <div class="modal-footer">
+            <form action="{% url 'delLocative' %}" method="POST" id="deleteU">
+                {% csrf_token %}
+                <input type="hidden" name="dellocativ" value="" id="dellocative">
+                <div class="list-btn">
+                    <button type="button" onclick="showModal('showmodala');"  class="a-button" style="--clr:#e91919;">
+                        {% trans "Fermer" %}
+                    </button>
+                    <button type="submit" class="a-button" style="--clr:#7380ec;">
+                        {% trans "Confirmer" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $("#deleteU").submit(function(e){
+        e.preventDefault();
+        swal({
+            title: "{% trans 'En cours' %} !",
+            text: "{% trans 'Veuillez ne pas quitter la page' %}",
+            type: "warning",
+            showCancelButton: false,
+            showConfirmButton : false,
+            confirmButtonColor: "#00BCD4",
+            confirmButtonText: "oK",
+            cancelButtonText: "No, cancel plx!",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        });
+        var formData = new FormData(this);
+        $.ajax({
+            type : "POST",
+            url: $(this).attr("action"),
+            data: formData,
+            dataType: 'json',
+            success: function(data) {                
+                if (data.etat == 0) {
+                    var textreturn = "{% trans 'Locative en location' %}";
+                    swal({
+                        title: "{% trans 'Erreur' %} !",
+                        text: textreturn,
+                        type: "error",
+                        showCancelButton: false,
+                        confirmButtonColor: "#7380ec",
+                        confirmButtonText: "oK",
+                        cancelButtonText: "No, cancel plx!",
+                        closeOnConfirm: true,
+                        closeOnCancel: true
+                    }, function (isConfirm) {
+                        if (isConfirm) {
+                            showModal('showmodala');
+                        }
+                    });
+                }else if (data.etat == 2) {
+                    var textreturn = "{% trans 'Locative réservée' %}";
+                    swal({
+                        title: "{% trans 'Erreur' %} !",
+                        text: textreturn,
+                        type: "error",
+                        showCancelButton: false,
+                        confirmButtonColor: "#7380ec",
+                        confirmButtonText: "oK",
+                        cancelButtonText: "No, cancel plx!",
+                        closeOnConfirm: true,
+                        closeOnCancel: true
+                    }, function (isConfirm) {
+                        if (isConfirm) {
+                            showModal('showmodala');
+                        }
+                    });
+                }else{
+                    
+                    var textreturn = "{% trans 'Locative supprimée' %}";
+                    swal({
+                        title: "{% trans 'Succès' %} !",
+                        text: textreturn,
+                        type: "success",
+                        showCancelButton: false,
+                        confirmButtonColor: "#7380ec",
+                        confirmButtonText: "oK",
+                        cancelButtonText: "No, cancel plx!",
+                        closeOnConfirm: true,
+                        closeOnCancel: false
+                    }, function (isConfirm) {
+                        if (isConfirm) {
+                            location.reload();
+                        }
+                    });
+                }
+                
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        });
+    });
+</script>
+
+<script>
+    function desUser(pk){
+        $('#dellocative').val(pk);
+        $.ajax({
+            url: "{% url 'desLocative' %}",
+            data: {
+                'id': pk
+            },
+            dataType: 'json',
+            success: function(data) {
+                if (data) {
+                    $('.modal-body').html(data.text);
+                    showModal('showmodala');
+                }
+            }
+        });
+    }
+</script>
+<script>
+    $(document).ready(function () {
+        $('#table_id').DataTable();
+    });
+</script>
+
+<script>
+    function showInfo(pk){
+        $.ajax({
+            url: "{% url 'infoLocative' %}",
+            data: {
+                'id': pk
+            },
+            dataType: 'json',
+            success: function(data) {
+                if (data) {
+                    $('.modal-body').html(data.une_locative);
+                    showModal('showmodal1');
+                }
+            }
+        });
+    }
+</script>
+{% endblock js %}

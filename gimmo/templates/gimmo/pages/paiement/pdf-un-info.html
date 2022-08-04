@@ -1,0 +1,211 @@
+<!DOCTYPE html>{% load static%} {% load i18n %}{% load ghis %} {% load humanize %}
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>{{ filenom }}</title>
+    
+    <style>
+        @page {
+            size: a4 portrait;
+            margin-left: 1.5cm;
+            margin-right: 1.5cm;
+        }
+
+        #invoice-POS {
+            box-shadow: 0 0 1in -0.25in rgba(0, 0, 0, 0.5);
+            padding: 2mm;
+            margin: 0 auto;
+            width: 88mm;
+            background: #FFF;
+            justify-content:space-between;
+            align-items: center;
+        }
+        
+        #top{
+            /* Targets all id with 'col-' */
+            border-bottom: 2px solid #EEE;
+        }
+        
+        #top {
+            min-height: 100px;
+        }
+        
+        #mid {
+            min-height: 80px;
+        }
+        
+        #bot {
+            min-height: 50px;
+            position: relative;
+            top: 98%;
+        }
+        td{
+            font-size: 12px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="invoice-POS">
+        <div id="top">
+            <table>
+                <tr style="border: 1px solid transparent;">
+                    <td align="left" style="border: none;">
+                            <img style="width:100px;height:100px;" src="{{ etablissement.logo.path }}">
+                    </td>
+                    <td align="right"  style="border: none;">
+                        <span style="font-size:35px;color: #7380ec;font-weight: 600;">RECU</span><br/>
+                        <span><b>Numéro de facture :</b> {{une_facture.facture.reffacture}}</span><br/>
+                        <span><b>Date de paiement :</b> {{une_facture.creation|naturaltime}}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td align="left" style="border: none;">
+                        <span style="font-size: 30px;color:black;font-weight:bold;font-style:italic;">{{ etablissement.raisonsocial }}</span><br/>
+                        <span>{{ etablissement.adresse }}</span><br/>
+                        <span>(00228) {{ etablissement.tel }} / {{ etablissement.telfixe }}<br/> {{ etablissement.email }}</span>
+                    </td>
+                    <td align="right"  style="border: none;">
+                        <span style="font-size:16px;color: #7380ec;font-weight: 600;">Facturé à</span><br/>
+                        <span>{{une_facture.facture.locataire.nom|upper}} {{une_facture.facture.locataire.prenom}}</span><br/>
+                        <span>{{une_facture.facture.locataire.tel}}</span>
+                    </td>
+                </tr>
+            </table>
+        </div><br/>
+        <div id="mid">
+            <div style="width: 100%;"><br/><br/><br/>
+               
+            </div>
+            <table cellpadding="2">
+                <tbody>
+                    <tr style="background-color: #7380ec;color: #fff;font-weight:bold;font-size: 14px;">
+                        <td style="border-left:none;border-right:none;" align="left">QTE</td>
+                        <td style="border-left:none;border-right:none;" align="center">LIBELLE</td>
+                        <td style="border-left:none;border-right:none;" align="center">MONTANT</td>
+                        <td style="border-left:none;border-right:none;" align="right">TOTAL</td>
+                    </tr>
+                    <!--<tr  style="width: 100%;background-color:#eee;">
+                        <td style="border-left:none;border-right:none;" align="left">1</td>
+                        <td style="border-left:none;border-right:none;" align="center">{{une_facture.facture.typefacture}}</td>
+                        <td style="border-left:none;border-right:none;" align="center">{{une_facture.facture.locative.montant}}</td>
+                        <td style="border-left:none;border-right:none;" align="right">{{une_facture.facture.locative.montant}}</td>
+                    </tr>-->
+                    {% if une_facture.facture.typefacture != 'Avance/Caution' %}                    
+                    <tr  style="width: 100%;background-color:#eee;">
+                        <td style="border-left:none;border-right:none;" align="left">1</td>
+                        <td style="border-left:none;border-right:none;" align="center">
+                            {% if une_facture.facture.typefacture != 'Avance/Caution' %}
+                                Loyer {{une_facture.facture.contrat.prochainpay|naturalday}}
+                            {% else %}
+                                {{une_facture.facture.typefacture}}
+                            {% endif %}
+                        </td>
+                        <td style="border-left:none;border-right:none;" align="center">{{une_facture.facture.locative.montant}}</td>
+                        <td style="border-left:none;border-right:none;" align="right">{{une_facture.facture.locative.montant}}</td>
+                    </tr>                   
+                    <tr  style="width: 100%;background-color:#eee;">
+                        <td style="border-left:none;border-right:none;" align="left">1</td>
+                        <td style="border-left:none;border-right:none;" align="center">Frais sur loyer</td>
+                        <td style="border-left:none;border-right:none;" align="center">{{une_facture.facture.locative.charge}}</td>
+                        <td style="border-left:none;border-right:none;" align="right">{{une_facture.facture.locative.charge}}</td>
+                    </tr>                   
+                    <tr  style="width: 100%;background-color:#eee;">
+                        <td style="border-left:none;border-right:none;" align="left">1</td>
+                        <td style="border-left:none;border-right:none;" align="center">Frais retard paiement</td>
+                        <td style="border-left:none;border-right:none;" align="center">{{une_facture.facture.retardfacture}}</td>
+                        <td style="border-left:none;border-right:none;" align="right">{{une_facture.facture.retardfacture}}</td>
+                    </tr>
+                    {% else %}
+                    <tr  style="width: 100%;background-color:#eee;">
+                        <td style="border-left:none;border-right:none;" align="left">{{une_facture.facture.contrat.avance}} Mois</td>
+                        <td style="border-left:none;border-right:none;" align="center">Avance</td>
+                        <td style="border-left:none;border-right:none;" align="center">{{une_facture.facture.locative.montant}}</td>
+                        <td style="border-left:none;border-right:none;" align="right">{{une_facture.facture.contrat.totavance}}</td>
+                    </tr>
+                    <tr  style="width: 100%;background-color:#eee;">
+                        <td style="border-left:none;border-right:none;" align="left">{{une_facture.facture.contrat.caution}} Mois</td>
+                        <td style="border-left:none;border-right:none;" align="center">Caution</td>
+                        <td style="border-left:none;border-right:none;" align="center">{{une_facture.facture.locative.montant}}</td>
+                        <td style="border-left:none;border-right:none;" align="right">{{une_facture.facture.contrat.totcaution}}</td>
+                    </tr>
+
+                    <tr  style="width: 100%;background-color:#eee;">
+                        <td style="border-left:none;border-right:none;" align="left">{{une_facture.facture.contrat.visiteqte}} x</td>
+                        <td style="border-left:none;border-right:none;" align="center">Visite du site </td>
+                        <td style="border-left:none;border-right:none;" align="center">{{une_facture.facture.contrat.visitemtt}}</td>
+                        <td style="border-left:none;border-right:none;" align="right">{{une_facture.facture.contrat.visitetot}}</td>
+                    </tr>
+                    <tr  style="width: 100%;background-color:#eee;">
+                        <td style="border-left:none;border-right:none;" align="left">{{une_facture.facture.contrat.honoraireqte}} x</td>
+                        <td style="border-left:none;border-right:none;" align="center">Honoraire</td>
+                        <td style="border-left:none;border-right:none;" align="center">{{une_facture.facture.contrat.honorairemtt}}</td>
+                        <td style="border-left:none;border-right:none;" align="right">{{une_facture.facture.contrat.honorairetot}}</td>
+                    </tr>
+                    <tr  style="width: 100%;background-color:#eee;">
+                        <td style="border-left:none;border-right:none;" align="left">{{une_facture.facture.contrat.droitqte}} x</td>
+                        <td style="border-left:none;border-right:none;" align="center">Droit d'enrégistrement </td>
+                        <td style="border-left:none;border-right:none;" align="center">{{une_facture.facture.contrat.droitmtt}}</td>
+                        <td style="border-left:none;border-right:none;" align="right">{{une_facture.facture.contrat.droittot}}</td>
+                    </tr>
+                    <tr  style="width: 100%;background-color:#eee;">
+                        <td style="border-left:none;border-right:none;" align="left">{{une_facture.facture.contrat.timbreqte}} x</td>
+                        <td style="border-left:none;border-right:none;" align="center">Timbres fiscaux + transport</td>
+                        <td style="border-left:none;border-right:none;" align="center">{{une_facture.facture.contrat.timbremtt}}</td>
+                        <td style="border-left:none;border-right:none;" align="right">{{une_facture.facture.contrat.timbretot}}</td>
+                    </tr>
+                    <tr  style="width: 100%;background-color:#eee;">
+                        <td style="border-left:none;border-right:none;" align="left">{{une_facture.facture.contrat.fraisdossiermtt}} x</td>
+                        <td style="border-left:none;border-right:none;" align="center">Frais de dossier</td>
+                        <td style="border-left:none;border-right:none;" align="center">{{une_facture.facture.contrat.fraisdossierqte}}</td>
+                        <td style="border-left:none;border-right:none;" align="right">{{une_facture.facture.contrat.fraisdossiertot}}</td>
+                    </tr>
+                    <tr  style="width: 100%;background-color:#eee;">
+                        <td style="border-left:none;border-right:none;" align="left">{{une_facture.facture.contrat.assuranceqte}} x</td>
+                        <td style="border-left:none;border-right:none;" align="center">Frais d'assurance</td>
+                        <td style="border-left:none;border-right:none;" align="center">{{une_facture.facture.contrat.assurancemtt}}</td>
+                        <td style="border-left:none;border-right:none;" align="right">{{une_facture.facture.contrat.assurancetot}}</td>
+                    </tr>
+                    {% endif %}
+                </tbody>
+                <tfoot>
+                    <tr style="width: 100%;background-color:#eee;">
+                        <td style="border-left:none;border-right:none;" colspan="2"></td>
+                        <td style="border-left:none;border-right:none;"align="right">MONTANT TOTAL</td>
+                        <td style="border-left:none;border-right:none;" align="right">{{ une_facture.facture.finaltotal }} {{ etablissement.devise }}</td>
+                    </tr>
+                    <tr style="width: 100%;background-color:#eee;">
+                        <td style="border-left:none;border-right:none;" colspan="2"></td>
+                        <td style="border-left:none;border-right:none;" align="right">RESTER A PAYER</td>
+                        <td style="border-left:none;border-right:none;" align="right">{{ une_facture.reste }} {{ etablissement.devise }}</td>
+                    </tr>
+                    <tr style="width: 100%;color: #fff;">
+                        <td style="border-left:none;border-right:none;" colspan="2"></td>
+                        <td style="border-left:none;border-right:none;background-color:#7380ec;" align="right">REGLEMENT PERCU</td>
+                        <td style="border-left:none;border-right:none;background-color:#7380ec;" align="right">{{ une_facture.paye }} {{ etablissement.devise }}</td>
+                    </tr>
+                    <tr style="width: 100%;">
+                        <td style="border-left:none;border-right:none;" colspan="2"></td>
+                        <td style="border-left:none;border-right:none;background-color:#FFF;" colspan="2" align="right">En lettre : {{totlettre}} {{ etablissement.devise }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        {% if une_facture.facture.typefacture != 'Avance/Caution' %}
+        <div id="bot" style="margin-top: 320px;">
+        {% else %}
+        <div id="bot" style="margin-top: 60px;">
+        {% endif %}
+            <div style="text-align: center;">
+                <span style="text-align: center;font-size:11px;">Fait le : {{today}} par {{ action }}</span><br/>
+                <span style="text-align: center;font-size:11px;">by <a href="https://tech-agence.net">TECH-AGENCE</a></span>
+            </div>
+        </div>
+        <!--End InvoiceBot-->
+    </div>
+    <!--End Invoice-->
+
+</body>
+
+</html>

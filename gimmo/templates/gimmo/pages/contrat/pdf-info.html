@@ -1,0 +1,253 @@
+<!DOCTYPE html>{% load static%}{% load i18n %} {% load ghis %} {% load humanize %}
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>{{ filenom }}</title>
+    
+    <style>
+        @page {
+            size: a4 portrait;
+        }
+
+        #invoice-POS {
+            box-shadow: 0 0 1in -0.25in rgba(0, 0, 0, 0.5);
+            padding: 2mm;
+            margin: 0 auto;
+            width: 88mm;
+            background: #FFF;
+        }
+        
+        #top,
+        #mid,
+        #botk {
+            /* Targets all id with 'col-' */
+            border-bottom: 1px solid #EEE;
+        }
+        
+        #top {
+            min-height: 100px;
+        }
+        
+        #mid {
+            min-height: 80px;
+        }
+        
+        #bot {
+            min-height: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="invoice-POS">
+        <div id="top">
+            <table>
+                <tr style="border: 1px solid transparent;">
+                    <td align="center" colspan="4" style="border: none;">
+                        <div class="">
+                            <img style="width:100px;height:100px;border-radius:50%;" src="{{ etablissement.logo.path }}"><br/><br/>
+                            <span style="font-size: 30px;color:black;font-weight:bold;font-style:italic;">{{ etablissement.raisonsocial }}</span><br/>
+                            <span>{% trans 'Adresse' %} : {{ etablissement.adresse }}</span><br/>
+                            <span>(00228) {{ etablissement.tel }} / {{ etablissement.telfixe }} / {{ etablissement.email }}</span>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <br/>
+        <div id="mid">
+            <table style="width:100%;padding:0;margin:0;background-color:#f7f7f7;">
+                <thead>
+                    <tr style="width: 100%;background-color:#fff;">
+                        <td colspan="4" style="border-left:none;border-right:none;text-align:center;font-size:14px;font-weight:bold;">CONTRAT DE: {{ un_contrat.locataire.nom|upper }} {{ un_contrat.locataire.prenom }}</td>
+                    </tr>
+                </thead>
+               <tbody>
+                <tr>
+                    <td style="width:150px;height:180px;background-color:#f7f7f7;text-align:center;" rowspan="4">
+                        {% if not un_contrat.photo %}
+                        <img src="{{ etablissement.logo.path }}" style="width: 110px; height: 120px;" />
+                        {% else %}
+                        <img src="{{ un_contrat.photo.path }}" style="width: 110px; height: 120px;" />
+                        {% endif %}
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding-left:40px;padding-top:10px;">
+                        <span style="font-size:12px;">Locataire</span><br />
+                        <span style="color:black;" class="sexe">{{ un_contrat.locataire.nom|upper }} {{ un_contrat.locataire.prenom }}</span>
+                    </td>
+                    <td style="padding-left:40px;padding-top:10px;">
+                        <span style="font-size:12px;">Propriétaire</span><br/>
+                        <span style="color:black;" class="nom">{{ un_contrat.proprietaire.nom|upper }} {{ un_contrat.proprietaire.prenom }}</span>
+                    </td>
+                    <td style="padding-left:40px;padding-top:10px;">
+                        <span style="font-size:12px;">Bien</span><br />
+                        <span style="color:black;" class="prenom">{{ un_contrat.bien.nom }}</span>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding-left:40px;padding-top:10px;">
+                        <span style="font-size:12px;">Locative</span><br />
+                        <span style="color:black;" class="daten">{{ un_contrat.locative.reflocative }}</span>
+                    </td>
+                    <td style="padding-left:40px;padding-top:10px;">
+                        <span style="font-size:12px;">Référence contrat</span><br />
+                        <span style="color:black;" class="matricule">{{ un_contrat.refcontrat }}</span>
+                    </td>
+                    <td style="padding-left:40px;padding-top:10px;">
+                        <span style="font-size:12px;">Type contrat</span><br />
+                        <span style="color:black;" class="nationalite">
+                            {% if un_contrat.typecontrat == 1 %}
+                                Contrat de bail habitation
+                            {% else %}
+                                Contrat de bail commercial
+                            {% endif %}
+                        </span>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding-left:40px;padding-top:10px;">
+                        <span style="font-size:12px;">Caution</span><br />
+                        <span style="color:black;" class="adresse">{{ un_contrat.caution }}</span>
+                    </td>
+                    <td style="padding-left:40px;padding-top:10px;">
+                        <div class="inp">
+                            <span style="font-size:12px;">Avance</span><br />
+                            <span style="color:black;" class="nume">{{ un_contrat.avance }}</span>
+                        </div>
+                    </td>
+                    <td style="padding-left:40px;padding-top:10px;">
+                        <div class="inp">
+                            <span style="font-size:12px;">Montant total locative</span><br />
+                            <span style="color:black;" class="emaile">{{ un_contrat.totallocative }}</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td></td>
+                    <td style="padding-left:40px;padding-top:10px;">
+                        <div class="inp">
+                            <span style="font-size:12px;">Frais total sur locative</span><br />
+                            <span style="color:black;" class="spec">{{ un_contrat.totalsurlocative }}</span>
+                        </div>
+                    </td>
+                    <td style="padding-left:40px;padding-top:10px;">
+                        <div class="inp">
+                            <span style="font-size:12px;">Net locative</span><br />
+                            <span style="color:black;" class="pseudo">{{ un_contrat.totalgeneral }}</span>
+                        </div>
+                    </td>
+                    <td style="padding-left:40px;padding-top:10px;">
+                        <div class="inp">
+                            <span style="font-size:12px;">Date signature</span><br />
+                            <span style="color:black;" class="mdp">{{un_contrat.datesign}}</span>
+                        </div>
+                    </td>
+                </tr>
+                              
+                <tr>
+                   <td style="padding-left:40px;padding-top:10px;">
+                        <div class="inp">
+                            <span style="font-size:12px;">Date début contrat</span><br />
+                            <span style="color:black;" class="spec">{{ un_contrat.dateentree }}</span>
+                        </div>
+                    </td>
+                    <td style="padding-left:40px;padding-top:10px;">
+                        <div class="inp">
+                            <span style="font-size:12px;">Date fin contrat</span><br />
+                            <span style="color:black;" class="spec">{{ un_contrat.datefin }}</span>
+                        </div>
+                    </td>
+                    <td style="padding-left:40px;padding-top:10px;">
+                        <div class="inp">
+                            <span style="font-size:12px;">Pourcentage à imputer en cas de retard</span><br />
+                            <span style="color:black;" class="pseudo">{{ un_contrat.retard }}</span>
+                        </div>
+                    </td>
+                    <td style="padding-left:40px;padding-top:10px;">
+                        <div class="inp">
+                            <span style="font-size:12px;">Jour ajouté à la date de paiement</span><br />
+                            <span style="color:black;" class="mdp">{{ un_contrat.limite }}</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                   <td style="padding-left:40px;padding-top:10px;">
+                        <div class="inp">
+                            <span style="font-size:12px;">Prochain paiement</span><br />
+                            <span style="color:black;" class="spec">{{un_contrat.prochainpay|naturalday}}</span>
+                        </div>
+                    </td>
+                </tr>
+                <tr>
+                    <td style="padding-left:40px;padding-top:10px;text-align: center;">
+                         <div class="inp">
+                             <span style="font-size:12px;">Visite du site</span><br />
+                             <span style="color:black;" class="spec">{{ un_contrat.visitetot }}</span>
+                         </div>
+                     </td>
+                     <td style="padding-left:40px;padding-top:10px;text-align: center;">
+                          <div class="inp">
+                              <span style="font-size:12px;">Honoraire</span><br />
+                              <span style="color:black;" class="spec">{{ un_contrat.honorairetot }}</span>
+                          </div>
+                      </td>
+                      <td style="padding-left:40px;padding-top:10px;text-align: center;">
+                           <div class="inp">
+                               <span style="font-size:12px;">Droit d'enrégistrement</span><br />
+                               <span style="color:black;" class="spec">{{ un_contrat.droittot }}</span>
+                           </div>
+                       </td>
+                       <td style="padding-left:40px;padding-top:10px;text-align: center;">
+                            <div class="inp">
+                                <span style="font-size:12px;">Timbres fiscaux + transport</span><br />
+                                <span style="color:black;" class="spec">{{ un_contrat.timbretot }}</span>
+                            </div>
+                        </td>
+                 </tr>
+                 <tr>
+                     <td style="padding-left:40px;padding-top:10px;text-align: center;">
+                          <div class="inp">
+                              <span style="font-size:12px;">Frais de dossier</span><br />
+                              <span style="color:black;" class="spec">{{ un_contrat.fraisdossiertot }}</span>
+                          </div>
+                      </td>
+                      <td style="padding-left:40px;padding-top:10px;text-align: center;">
+                           <div class="inp">
+                               <span style="font-size:12px;">Frais d'assurance</span><br />
+                               <span style="color:black;" class="spec">{{ un_contrat.assurancetot }}</span>
+                           </div>
+                       </td>
+                       <td style="padding-left:40px;padding-top:10px;text-align: center;" colspan="2">
+                            <div class="inp">
+                                <span style="font-size:12px;">Etat contrat</span><br />
+                                <span style="color:black;" class="spec">
+                                    {% if un_contrat.activecontrat == 1 %}
+                                        Actif
+                                    {% elif un_contrat.activecontrat == 2 %}
+                                        Terminé
+                                    {% else %}
+                                        En attente
+                                    {% endif %}
+                                </span>
+                            </div>
+                        </td>
+                  </tr>
+               </tbody>
+                </table>
+        </div>
+        <div id="bot" style="margin-top: 260px;">
+            <div style="text-align: center;">
+                <span style="text-align: center;font-size:11px;">Fait le : {{today}} par {{ action }}</span><br/>
+                <span style="text-align: center;font-size:11px;">by <a href="https://tech-agence.net">TECH-AGENCE</a></span>
+            </div>
+        </div>
+        <!--End InvoiceBot-->
+    </div>
+    <!--End Invoice-->
+
+</body>
+
+</html>

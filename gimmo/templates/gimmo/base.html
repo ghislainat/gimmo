@@ -1,0 +1,581 @@
+{% load i18n %} {% load static %} {% load ghis %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no" name="viewport">
+    <link rel="icon" href="{% static '/gimmo/images/gimmo_svg.svg' %}" type="image/x-icon">
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Sharp" rel="stylesheet">
+    <link rel="stylesheet" href="{% static '/gimmo/css/index.css' %}"><!-- Sweetalert Css -->
+    <link href="{% static '/gimmo/plugins/sweetalert/sweetalert.css' %}" rel="stylesheet" />
+    
+    <link rel="stylesheet" href="{% static '/gimmo/datatable/jquery.dataTables.min.css' %}">
+    {% block css %}{% endblock css %}
+    <title>{% block title %}{% endblock title %}</title>
+</head>
+<body>
+    <div class="prev-center">
+        <div class="ring"></div>
+        <span><img src="{% static '/gimmo/images/gimmo_svg.svg' %}" alt="gImmo" style="width: 6rem;"></span>
+    </div>
+    <div class="container">
+        <aside>
+            <div class="top">
+                <div class="logo">
+                    <img src="{% static '/gimmo/images/gimmo_svg.svg' %}" alt="gImmo">
+                    <h2>gImmo</h2>
+                </div>
+                <div class="close" id="close-btn">
+                    <span class="material-icons-sharp">
+                        close
+                    </span>
+                </div>
+            </div>
+
+            <div class="sidebar">
+                <a href="{% url 'accueil' %}" {% if accueil %}class="active"{% endif %}>
+                    <span class="material-icons-sharp">
+                        dashboard
+                    </span>
+                    <h3>Acceuil</h3>
+                </a>
+                {% if request.user.employe.d5 == 1  or request.user.employe.d13 == 1 or request.user.is_staff%}
+                    <a href="{% url 'employe' %}" {% if employe %}class="active"{% endif %}>
+                        <span class="material-icons-sharp">
+                            manage_accounts
+                        </span>
+                        <h3>Employé</h3>
+                    </a>
+                {% endif %}
+                
+                {% if request.user.employe.d6 == 1  or request.user.employe.d13 == 1 or request.user.is_staff%}
+                <a href="{% url 'proprietaire' %}" {% if proprietaire %}class="active"{% endif %}>
+                    <span class="material-icons-sharp">
+                        person
+                    </span>
+                    <h3>Propriétaire</h3>
+                </a>
+                {% endif %}
+
+                {% if request.user.employe.d7 == 1  or request.user.employe.d13 == 1 or request.user.is_staff or request.user.proprietaire.d1 %}
+                <a href="{% url 'locataire' %}" {% if locataire %}class="active"{% endif %}>
+                    <span class="material-icons-sharp">
+                        group
+                    </span>
+                    <h3>Locataire</h3>
+                </a>
+                {% endif %}
+
+                {% if request.user.employe.d9 == 1  or request.user.employe.d13 == 1 or request.user.is_staff  or request.user.proprietaire.d1 %}
+                <a href="{% url 'bien' %}" {% if bien %}class="active"{% endif %}>
+                    <span class="material-icons-sharp">
+                        business
+                    </span>
+                    <h3>Bien</h3>
+                </a>
+                {% endif %}
+                
+                {% if request.user.employe.d8 == 1  or request.user.employe.d13 == 1 or request.user.is_staff  or request.user.proprietaire.d1  or request.user.locataire.d1 %}
+                <a href="{% url 'locative' %}" {% if locative %}class="active"{% endif %}>
+                    <span class="material-icons-sharp">
+                        meeting_room
+                    </span>
+                    <h3>Locative</h3>
+                </a>
+                {% endif %}
+
+               
+
+                {% if request.user.employe.d10 == 1 or request.user.employe.d13 == 1 or request.user.is_staff  or request.user.proprietaire.d1  or request.user.locataire.d1 %}
+                <a href="{% url 'contrat' %}" {% if contrat %}class="active"{% endif %}>
+                    <span class="material-icons-sharp">
+                        description
+                    </span>
+                    <h3>Contrat</h3>
+                </a>
+                {% endif %}
+
+                {% if request.user.employe.d11 == 1 or request.user.employe.d13 == 1 or request.user.is_staff  or request.user.proprietaire.d1  or request.user.locataire.d1 %}
+                <a href="{% url 'paiement' %}" {% if paiement %}class="active"{% endif %}>
+                    <span class="material-icons-sharp">
+                        credit_card
+                    </span>
+                    <h3>Paiement</h3>
+                    <span class="message-count">{{1|nombre_p_atten}}</span>
+                </a>
+                {% endif %}
+                {% if request.user.employe.d11 == 1 or request.user.employe.d13 == 1 or request.user.is_staff  or request.user.proprietaire.d1  or request.user.locataire.d1 %}
+                <a href="{% url 'paiementav' %}" {% if paiementav %}class="active"{% endif %}>
+                    <span class="material-icons-sharp">
+                        credit_card
+                    </span>
+                    <h3>Paiement à venir</h3>
+                </a>
+                {% endif %}
+                {% if request.user.employe.d13 == 1 or request.user.is_staff  %}
+                <a href="{% url 'depense' %}" {% if depense %}class="active"{% endif %}>
+                    <span class="material-icons-sharp">
+                        hourglass_bottom
+                    </span>
+                    <h3>Dépenses</h3>
+                </a>
+                {% endif %}
+                {% if request.user.employe.d13 == 1 or request.user.is_staff  %}
+                <a href="{% url 'fichier' %}" {% if fichier %}class="active"{% endif %}>
+                    <span class="material-icons-sharp">
+                        folder
+                    </span>
+                    <h3>Fichier</h3>
+                </a>
+                {% endif %}
+                
+                <a href="{% url 'message' %}" {% if message %}class="active"{% endif %}>
+                    <span class="material-icons-sharp">
+                        email
+                    </span>
+                    <h3>Message</h3>
+                    <span class="message-count">0</span>
+                </a>
+
+                
+                <a href="{% url 'rapport' %}" {% if rapport %}class="active"{% endif %}>
+                    <span class="material-icons-sharp">
+                        inventory
+                    </span>
+                    <h3>Rapport</h3>
+                </a>
+
+                {% if request.user.employe.d13 == 1 or request.user.is_staff  %}
+                <a href="{% url 'parametre' %}" {% if parametre %}class="active"{% endif %}>
+                    <span class="material-icons-sharp">
+                        settings
+                    </span>
+                    <h3>Paramètre</h3>
+                </a>
+                {% endif %}
+
+                <a href="{% url 'deconnexion' %}">
+                    <span class="material-icons-sharp">
+                        logout
+                    </span>
+                    <h3>Se déconnecter</h3>
+                </a>
+            </div>
+        </aside>
+        {% block content %} {% endblock content %}
+        <!--RIGHT PANEL-->
+        <div class="right">
+            <!--TOP-->
+            <div class="top">
+                <button id="menu-btn">
+                    <span class="material-icons-sharp">
+                        menu
+                    </span>
+                </button>
+                <div class="help-btn etat-scren" data-screen="1">
+                    <span class="material-icons-sharp screen-icon">
+                        fullscreen
+                    </span>
+                </div>
+                <div class="help-btn">
+                    <span class="material-icons-sharp">
+                        contact_support
+                    </span>
+                </div>
+                <div class="theme-toggler">
+                    <span class="lightmode material-icons-sharp">light_mode</span>
+                    <span class="darkmode material-icons-sharp">dark_mode</span>
+                </div>
+               <div class="profile">
+                    <div class="info">
+                        <p>Hey, <b>{{request.user.username}}</b></p>
+                        <small class="text-muted">
+                            {% if request.user.employe.d13 == 1 or request.user.is_staff %}
+                              Admin
+                            {% elif request.user.locataire.d1 == 1 %}
+                                Locataire
+                            {% elif request.user.proprietaire.d1 == 1 %}
+                                Propriétaire
+                            {% else %}
+                              Personnel
+                            {% endif %}
+                            
+                        </small>
+                    </div>
+                    <a href="{% url 'profile' %}" class="profile-photo">
+                        <img src="{% static '/gimmo/images/user.png' %}" alt="PROFILE">
+                    </a>
+                </div>
+            </div>
+            <!--END TOP-->
+            <div class="shortcuts">
+                <div class="sh-box" onclick='location.href = "/payer";' style="cursor: pointer;">
+                    <span class="material-icons-sharp">
+                        inventory
+                    </span>
+                    <h3>Payer</h3>
+                </div>
+                <!--<div class="sh-box"  onclick="showModal('showmodal_calc');" style="cursor: pointer;">
+                    <span class="material-icons-sharp">
+                        calculate
+                    </span>
+                    <h3>Calculer</h3>
+                </div>-->
+            </div>
+            {% if request.user.employe.d13 == 1 or request.user.is_staff  %}
+            <!--END TOP-->
+            <div class="sales-analytics">
+                <h2>Factures passées</h2>
+                <div class="item" style="--clr:#9cec51;">
+                    <div class="icon">
+                        <span class="material-icons-sharp">
+                            done_all
+                        </span>
+                    </div>
+                    <div class="right">
+                        <div class="info">
+                            <h3>PAYEES</h3>
+                            <small class="text-muted">Factures {{1|mois_passe}}</small>
+                        </div>
+                        <h5 class="success">{{1|facture_paye_mp}}</h5>
+                    </div>
+                </div>
+                <div class="item"  style="--clr:#ec5151;">
+                    <div class="icon">
+                        <span class="material-icons-sharp">
+                            remove_done
+                        </span>
+                    </div>
+                    <div class="right">
+                        <div class="info">
+                            <h3>IMPAYEES</h3>
+                            <small class="text-muted">Factures {{1|mois_passe}}</small>
+                        </div>
+                        <h5 class="danger">{{1|facture_impaye_mp}}</h5>
+                    </div>
+                </div>
+                <div class="item add-product" onclick='location.href = "/rapport";' style="cursor: pointer;">
+                    <div>
+                        <span class="material-icons-sharp">
+                            inventory
+                        </span>
+                        <h3>Historique paiements</h3>
+                    </div>
+                </div>
+            </div>
+            <!--END RECENT UPDATE-->
+            <div class="recent-updates">
+                <h2>Bilan</h2>
+                <div class="updates">
+                    <canvas id="myChartbase"></canvas>
+                    <!--<div class="update">
+                        <div class="profile-photo">
+                            <img src="{% static '/gimmo/images/profile-4.jpg' %}" alt="">
+                        </div>
+                        <div class="message">
+                            <p><b>Ghislain Tepe</b> received his order of night lion tech GPS.</p>
+                            <small class="text-muted">2 Min Ago</small>
+                        </div>
+                    </div>
+                    <div class="update">
+                        <div class="profile-photo">
+                            <img src="{% static '/gimmo/images/profile-2.jpg' %}" alt="">
+                        </div>
+                        <div class="message">
+                            <p><b>Ghislain Tepe</b> received his order of night lion tech GPS.</p>
+                            <small class="text-muted">2 Min Ago</small>
+                        </div>
+                    </div>
+                    <div class="update">
+                        <div class="profile-photo">
+                            <img src="{% static '/gimmo/images/profile-3.jpg' %}" alt="">
+                        </div>
+                        <div class="message">
+                            <p><b>Ghislain Tepe</b> received his order of night lion tech GPS.</p>
+                            <small class="text-muted">2 Min Ago</small>
+                        </div>
+                    </div>-->
+                </div>
+            </div>
+            <!--END RECENT UPDATE-->
+
+            <!--END TOP-->
+            <div class="sales-analytics">
+                <h2>Résumés</h2>
+                <div class="item"  style="--clr:#cec000;">
+                    <div class="icon">
+                        <span class="material-icons-sharp">
+                            person
+                        </span>
+                    </div>
+                    <div class="right">
+                        <div class="info">
+                            <h3>PROPRIETAIRES</h3>
+                            <small class="text-muted">Total: {{1|allpro}}</small>
+                        </div>
+                        <h5 class="success">{{1|actifpro}}</h5>
+                        <h5 class="danger">{{1|inactifpro}}</h5>
+                    </div>
+                </div>
+                <div class="item" style="--clr:black;">
+                    <div class="icon">
+                        <span class="material-icons-sharp">
+                            group
+                        </span>
+                    </div>
+                    <div class="right">
+                        <div class="info">
+                            <h3>LOCATAIRES</h3>
+                            <small class="text-muted">Total: {{1|allloc}}</small>
+                        </div>
+                        <h5 class="success">{{1|actifloc}}</h5>
+                        <h5 class="danger">{{1|inactifloc}}</h5>
+                    </div>
+                </div>
+                <div class="item"  style="--clr:#00798f;">
+                    <div class="icon">
+                        <span class="material-icons-sharp">
+                            meeting_room
+                        </span>
+                    </div>
+                    <div class="right">
+                        <div class="info">
+                            <h3>LOCATIVES</h3>
+                            <small class="text-muted">Total: {{1|alllocative}}</small>
+                        </div>
+                        <h5 class="success">{{1|actifloca}}</h5>
+                        <h5 class="danger">{{1|inactifloca}}</h5>
+                    </div>
+                </div>
+                <div class="item add-product" onclick='location.href = "/newlocataire";' style="cursor: pointer;">
+                    <div>
+                        <span class="material-icons-sharp">
+                            add
+                        </span>
+                        <h3>Ajouter un locataire</h3>
+                    </div>
+                </div>
+            </div>
+            {% else %}
+            <div class="sales-analytics">
+                <div class="item add-product">
+                    <div>
+                        <span class="material-icons-sharp">
+                            privacy_tip
+                        </span>
+                        <h3>INFORMATIONS SECURISEES</h3>
+                    </div>
+                </div>
+            </div>
+            {% endif %}
+            <!--END TOP-->
+            <!--END TOP-->
+        </div>
+        <!--END RIGHT PANEL-->
+    </div>
+    
+<div class="modal sm-modal showmodal_calc" id="modal-hs">
+    <div class="content">
+        <div class="modal-header">
+            <div class="title">Paiement</div>
+            <div class="close" onclick="showModal('showmodal_calc');">
+                <span class="material-icons-sharp">
+                    close
+                </span>
+            </div>
+        </div>
+        <div class="modal-body">
+            <table class="calculatrice" id="calc">
+                <tr>
+                    <td colspan="4" class="calc_td_resultat">
+                        <input type="text" readonly="readonly" name="calc_resultat" id="calc_resultat" class="calc_resultat" onkeydown="javascript:key_detect_calc('calc',event);" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="calc_td_btn">
+                        <input type="button" class="calc_btn btn btn-danger" value="CE" onclick="javascript:f_calc('calc','ce');" />
+                    </td>
+                    <td class="calc_td_btn">
+                        <input type="button" class="calc_btn btn btn-warning" value="&larr;" onclick="javascript:f_calc('calc','nbs');" />
+                    </td>
+                    <td class="calc_td_btn">
+                        <input type="button" class="calc_btn btn btn-wh" value="%" onclick="javascript:f_calc('calc','%');" />
+                    </td>
+                    <td class="calc_td_btn">
+                        <input type="button" class="calc_btn btn btn-wh" value="+" onclick="javascript:f_calc('calc','+');" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="calc_td_btn">
+                        <input type="button" class="calc_btn btn btn-wh" value="7" onclick="javascript:add_calc('calc',7);" />
+                    </td>
+                    <td class="calc_td_btn">
+                        <input type="button" class="calc_btn btn btn-wh" value="8" onclick="javascript:add_calc('calc',8);" />
+                    </td>
+                    <td class="calc_td_btn">
+                        <input type="button" class="calc_btn btn btn-wh" value="9" onclick="javascript:add_calc('calc',9);" />
+                    </td>
+                    <td class="calc_td_btn">
+                        <input type="button" class="calc_btn btn btn-wh" value="-" onclick="javascript:f_calc('calc','-');" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="calc_td_btn">
+                        <input type="button" class="calc_btn btn btn-wh" value="4" onclick="javascript:add_calc('calc',4);" />
+                    </td>
+                    <td class="calc_td_btn">
+                        <input type="button" class="calc_btn btn btn-wh" value="5" onclick="javascript:add_calc('calc',5);" />
+                    </td>
+                    <td class="calc_td_btn">
+                        <input type="button" class="calc_btn btn btn-wh" value="6" onclick="javascript:add_calc('calc',6);" />
+                    </td>
+                    <td class="calc_td_btn">
+                        <input type="button" class="calc_btn btn btn-wh" value="x" onclick="javascript:f_calc('calc','*');" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="calc_td_btn">
+                        <input type="button" class="calc_btn btn btn-wh" value="1" onclick="javascript:add_calc('calc',1);" />
+                    </td>
+                    <td class="calc_td_btn">
+                        <input type="button" class="calc_btn btn btn-wh" value="2" onclick="javascript:add_calc('calc',2);" />
+                    </td>
+                    <td class="calc_td_btn">
+                        <input type="button" class="calc_btn btn btn-wh" value="3" onclick="javascript:add_calc('calc',3);" />
+                    </td>
+                    <td class="calc_td_btn">
+                        <input type="button" class="calc_btn btn btn-wh" value="&divide;" onclick="javascript:f_calc('calc','/');" />
+                    </td>
+                </tr>
+                <tr>
+                    <td class="calc_td_btn">
+                        <input type="button" class="calc_btn btn btn-wh" value="0" onclick="javascript:add_calc('calc',0);" />
+                    </td>
+                    <td class="calc_td_btn">
+                        <input type="button" class="calc_btn btn btn-wh" value="&plusmn;" onclick="javascript:f_calc('calc','+-');" />
+                    </td>
+                    <td class="calc_td_btn">
+                        <input type="button" class="calc_btn btn btn-wh" value="," onclick="javascript:add_calc('calc','.');" />
+                    </td>
+                    <td class="calc_td_btn">
+                        <input type="button" class="calc_btn btn btn-success" value="=" onclick="javascript:f_calc('calc','=');" />
+                    </td>
+                </tr>
+            </table>            
+        </div>
+    </div>
+</div>
+    <script src="{% static '/gimmo/js/index.js' %}"></script>
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+    <!--<script type="text/javascript" src="https://cdn.datatables.net/1.10.16/js/jquery.dataTables.min.js"></script>-->
+    <script src="{% static '/gimmo/plugins/sweetalert/sweetalert.min.js' %}"></script>
+    <script src="{% static '/gimmo/plugins/jquery-datatable/jquery.dataTables.js' %}"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@3.8.0/dist/chart.min.js"></script>
+
+    {% if request.user|themevariable == 0 %}
+        <script>
+            $('.lightmode').addClass('active');
+            $('.darkmode').removeClass('active');
+            $('body').removeClass('dark-theme-variables');
+        </script>
+    {% else %}
+        <script>
+            $('.darkmode').addClass('active');
+            $('body').addClass('dark-theme-variables');
+        </script>
+    {% endif %}
+    
+    <script>
+        $(document).ready(function(){
+            
+                        
+            const themeToggler = document.querySelector(".theme-toggler");
+
+            themeToggler.addEventListener('click',()=>{
+                $.ajax({
+                    url: "{% url 'themevar' %}",
+                    data: {
+                        'id': 1
+                    },
+                    dataType: 'json',
+                    success: function(data) {
+                        if (data.etat == '1') {
+                            //document.body.classList.toggle('dark-theme-variables');
+                            themeToggler.querySelector('span:nth-child(1)').classList('active');
+                            themeToggler.querySelector('span:nth-child(2)').removeClass('active');
+                        }else{
+                            //document.body.classList.toggle('dark-theme-variables');
+                            themeToggler.querySelector('span:nth-child(1)').removeClass('active');
+                            themeToggler.querySelector('span:nth-child(2)').classList('active');
+                        }
+                    }
+                });
+            })
+        });
+    </script>
+    <script>
+        const ctxxx = document.getElementById('myChartbase').getContext('2d');
+        const myChartbase = new Chart(ctxxx, {
+            type: 'line',
+            data: {
+                labels: ['J', 'F', 'M', 'A', 'M', 'J', 'J', 'A', 'S', 'O', 'N', 'D'],
+                datasets: [{
+                    label: 'Bilan mensuel',
+                    data: ['{{1|epargnemensuel}}', '{{2|epargnemensuel}}', '{{3|epargnemensuel}}','{{4|epargnemensuel}}', '{{5|epargnemensuel}}', '{{6|epargnemensuel}}','{{7|epargnemensuel}}', '{{8|epargnemensuel}}', '{{9|epargnemensuel}}','{{10|epargnemensuel}}', '{{11|epargnemensuel}}', '{{12|epargnemensuel}}'],
+                    fill: false,
+                    borderColor: 'rgb(75, 192, 192)',
+                    tension: 0.1
+                }]
+            },
+            options: {
+                //scales: {
+                //    y: {
+                //        beginAtZero: true
+                //    }
+                //}
+                responsive: true,
+            }
+        });
+    </script>
+    <script>
+        $('.etat-scren').click(function(){
+            var etatscreen =  $('.etat-scren').attr('data-screen');
+            if (etatscreen == 1) {
+                openFullscreen();
+                $('.screen-icon').text('fullscreen_exit');
+                $('.etat-scren').attr('data-screen','0');
+            } else {
+                $('.screen-icon').text('fullscreen');
+                $('.etat-scren').attr('data-screen','1');
+                closeFullscreen();
+            }
+        });
+        /* Get the documentElement (<html>) to display the page in fullscreen */
+        var elem = document.documentElement;
+        
+        /* View in fullscreen */
+        function openFullscreen() {
+          if (elem.requestFullscreen) {
+            elem.requestFullscreen();
+          } else if (elem.webkitRequestFullscreen) { /* Safari */
+            elem.webkitRequestFullscreen();
+          } else if (elem.msRequestFullscreen) { /* IE11 */
+            elem.msRequestFullscreen();
+          }
+        }
+        
+        /* Close fullscreen */
+        function closeFullscreen() {
+          if (document.exitFullscreen) {
+            document.exitFullscreen();
+          } else if (document.webkitExitFullscreen) { /* Safari */
+            document.webkitExitFullscreen();
+          } else if (document.msExitFullscreen) { /* IE11 */
+            document.msExitFullscreen();
+          }
+        }
+    </script>
+    {% block js %}{% endblock js %}
+</body>
+</html>

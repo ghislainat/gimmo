@@ -1,0 +1,147 @@
+<!DOCTYPE html>{% load static%} {% load i18n %}{% load ghis %} {% load humanize %}
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>{{ filenom }}</title>
+    
+    <style>
+        @page {
+            size: a4 portrait;
+        }
+
+        #invoice-POS {
+            box-shadow: 0 0 1in -0.25in rgba(0, 0, 0, 0.5);
+            padding: 2mm;
+            margin: 0 auto;
+            width: 88mm;
+            background: #FFF;
+        }
+        
+        #top,
+        #mid,
+        #botk {
+            /* Targets all id with 'col-' */
+            border-bottom: 1px solid #EEE;
+        }
+        
+        #top {
+            min-height: 100px;
+        }
+        
+        #mid {
+            min-height: 80px;
+        }
+        
+        #bot {
+            min-height: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="invoice-POS">
+        <div id="top">
+            <table>
+                <tr style="border: 1px solid transparent;">
+                    <td align="center" colspan="4" style="border: none;">
+                        <div class="">
+                            <img style="width:100px;height:100px;border-radius:50%;" src="{{ etablissement.logo.path }}"><br/><br/>
+                            <span style="font-size: 30px;color:black;font-weight:bold;font-style:italic;">{{ etablissement.raisonsocial }}</span><br/>
+                            <span>{% trans 'Adresse' %} : {{ etablissement.adresse }}</span><br/>
+                            <span>(00228) {{ etablissement.tel }} / {{ etablissement.telfixe }} / {{ etablissement.email }}</span>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="mid">
+            <div style="text-align: center;">
+                <table border="0">
+                    <tr style="border: none;">
+                        <td style="border: none;">
+
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <table cellpadding="5">
+                <thead>
+                    <tr style="width: 100%;background-color:#fff;">
+                        <td colspan="10" style="border-left:none;border-right:none;text-align:center;font-size:14px;font-weight:bold;">RAPPORT DE {{un_proprietaire.nom|upper}} {{ un_proprietaire.prenom }}</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="width: 100%;background-color:#eee;">
+                        <td style="border-left:none;border-right:none;">#</td>
+                        <td style="border-left:none;border-right:none;">ID</td>
+                        <td style="border-left:none;border-right:none;">Type facture</td>
+                        <td style="border-left:none;border-right:none;">Locataire</td>
+                        <td style="border-left:none;border-right:none;">Locative</td>
+                        <td style="border-left:none;border-right:none;">Montant</td>
+                        <td style="border-left:none;border-right:none;">Payé</td>
+                        <td style="border-left:none;border-right:none;">Reste</td>
+                        <td style="border-left:none;border-right:none;">Statut</td>
+                        <td style="border-left:none;border-right:none;">Traité le</td>
+                    </tr>
+                    {% for une_facture in liste_facture %}
+
+                    <tr>
+                        <td style="border-left:none;border-right:none;">{{ forloop.counter }}</td>
+                        <td style="border-left:none;border-right:none;">{{une_facture.reffacture}}</td>
+                        <td style="border-left:none;border-right:none;">
+                            {% if une_facture.typefacture != 'Avance/Caution' %}
+                                Loyer {{une_facture.contrat.prochainpay|naturalday}}
+                            {% else %}
+                                {{une_facture.typefacture}}
+                            {% endif %}
+                        </td>
+                        <td style="border-left:none;border-right:none;">
+                            {% if une_facture.locataire.raisonsocial == '' %}
+                                {{une_facture.locataire.nom|upper}} {{ une_facture.locataire.prenom }}
+                            {% else %}
+                                {{une_facture.locataire.raisonsocial|upper}}
+                            {% endif %}
+                        </td>
+                        <td style="border-left:none;border-right:none;">{{une_facture.locative.reflocative}}</td>
+                        <td style="border-left:none;border-right:none;">{{une_facture.totfacture}}</td>
+                        <td style="border-left:none;border-right:none;">{{une_facture.payefacture}}</td>
+                        <td style="border-left:none;border-right:none;">{{une_facture.restefacture}}</td>
+                        <td style="border-left:none;border-right:none;">
+                            {% if une_facture.etat == 1 %}
+                                <span class="success">{% trans "Terminé" %}</span>
+                            {% elif une_facture.etat == 2 %}
+                                <span class="danger">{% trans "En retard" %}</span>
+                            {% elif une_facture.etat == 3 %}
+                                <span class="warning">{% trans "En attente" %}</span>
+                            {% else %}
+                                <span class="warning">{% trans "En cours" %}</span>
+                            {% endif %}
+                        </td>
+                        <td style="border-left:none;border-right:none;">{{une_facture.creation|naturalday}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr style="width: 100%;background-color:#eee;">
+                        <td style="border-left:none;border-right:none;" colspan="5" align="left">TOTAL</td>
+                        <td style="border-left:none;border-right:none;" align="right">{{ totala }}</td>
+                        <td style="border-left:none;border-right:none;" align="right">{{ totalp }}</td>
+                        <td style="border-left:none;border-right:none;" align="right">{{ totalr }}</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <div id="bot">
+            <div style="text-align: center;">
+                <span style="text-align: center;font-size:11px;">Fait le : {{today}} par {{ action }}</span><br/>
+                <span style="text-align: center;font-size:11px;">by <a href="https://tech-agence.net">TECH-AGENCE</a></span>
+            </div>
+        </div>
+        <!--End InvoiceBot-->
+    </div>
+    <!--End Invoice-->
+
+</body>
+
+</html>

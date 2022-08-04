@@ -1,0 +1,323 @@
+{% extends 'gimmo/base.html' %}{% load i18n %}{% load static %}{% load ghis %}
+{% block css %}
+<link rel="stylesheet" href="{% static '/gimmo/css/modal.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/form.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/responsivebox.css' %}">
+{% endblock css %}
+{% block title %}{% trans "LOCATAIRE" %}{% endblock title %}
+{% block content %}
+        <main>
+            <h1>Locataire</h1>
+            <div class="list-btn">
+                {% if 'PR' in request.user.username or 'LO' in request.user.username %}
+                                      
+                {% else %}
+                <a href="{% url 'newlocataire' %}" class="a-button" style="--clr:#7380ec;">
+                    <span class="material-icons-sharp">
+                        add
+                        </span>
+                    {% trans "Nouveau" %}
+                </a>
+                {% endif %}
+                <a href="{% url 'pdflocataire' %}" class="a-button" style="--clr:#e91919;">
+                    <span class="material-icons-sharp">
+                        text_snippet
+                        </span>
+                    {% trans "Export pdf" %}
+                </a>
+            </div>
+            <!--CARD-->
+            <div class="main-body">
+                <div class="recent-orders">
+                    <h2>{% trans "Liste" %}</h2>
+                    <table id="table_id">
+                        <thead>
+                            <tr>
+                                <th>#</th>
+                                <th>ID</th>
+                                <th>{% trans "Locataire" %}</th>
+                                <th>{% trans "Locative occupée" %}</th>
+                                <th>{% trans "Type" %}</th>
+                                <th>{% trans "Contact" %}</th>
+                                <th>{% trans "Rejoint" %}</th>
+                                <th>{% trans "Statut" %}</th>
+                                <th>Actions</th>
+                            </tr>
+                        </thead>
+                        <tbody>{% load humanize %}
+                            {% for un_locataire in liste_locataire %}
+                            {% if etat == 1 %}
+                            <tr>
+                                <td data-thead="#">{{forloop.counter}}</td>
+                                <td data-thead="ID">{{un_locataire.locataire__user__username}}</td>
+                                <td data-thead="Locataire">
+                                    {% if un_locataire.locataire__raisonsocial == '' %}
+                                        {{un_locataire.locataire__nom|upper}} {{ un_locataire.locataire__prenom }}
+                                    {% else %}
+                                        {{un_locataire.locataire__raisonsocial|upper}}
+                                    {% endif %}
+                                    
+                                </td>
+                                <td data-thead="Locative occupée">{{ un_locataire.locataire|occuplocataire }}</td>
+                                <td data-thead="Type">
+                                    {% if un_locataire.locataire__raisonsocial == '' %}
+                                        {% trans "PARTICULIER" %}
+                                    {% else %}
+                                        {% trans "ENTREPRISE" %}
+                                    {% endif %}
+                                </td>
+                                <td data-thead="Contact">{{ un_locataire.locataire__tel }}</td>
+                                <td data-thead="Rejoint">{{ un_locataire.locataire__creation|naturalday }}</td>
+                                <td data-thead="Statut">
+                                    {% if un_locataire.locataire__d1 == 1 %}
+                                        <span  style="cursor: pointer;" onclick="desUser('{{un_locataire.locataire__idpub}}');" class="success">Actif</span>
+                                    {% else %}
+                                        <span  style="cursor: pointer;" onclick="desUser('{{un_locataire.locataire__idpub}}');" class="danger">Inactif</span>
+                                    {% endif %}
+                                </td>
+                                <td data-thead="Actions">
+                                    <div class="action-btn">
+                                        <span onclick="showInfo('{{un_locataire.locataire__idpub}}');" class="bg-primary" data-toolpit="yes" toolpit-text="{% trans 'Plus de détails' %}">
+                                            <span class="material-icons-sharp">
+                                                visibility
+                                            </span>
+                                        </span>
+                                        <a href="{% url 'llocataire' un_locataire.locataire__idpub %}" class="bg-info-dark" data-toolpit="yes" toolpit-text="{% trans 'Modifier les informations' %}">
+                                            <span class="material-icons-sharp">
+                                                summarize
+                                            </span>
+                                        </a>
+                                        
+                                        {% if 'PR' in request.user.username or 'LO' in request.user.username %}
+                                      
+                                        {% else %}
+                                            <a href="{% url 'elocataire' un_locataire.locataire__idpub %}" class="bg-info-dark" data-toolpit="yes" toolpit-text="{% trans 'Modifier les informations' %}">
+                                                <span class="material-icons-sharp">
+                                                    edit_note
+                                                </span>
+                                            </a>
+                                        {% endif %}
+                                        
+                                    </div>
+                                </td>
+                            </tr>
+                            {% else %}
+                            <tr>
+                                <td data-thead="#">{{forloop.counter}}</td>
+                                <td data-thead="ID">{{un_locataire.user.username}}</td>
+                                <td data-thead="Locataire">
+                                    {% if un_locataire.raisonsocial == '' %}
+                                        {{un_locataire.nom|upper}} {{ un_locataire.prenom }}
+                                    {% else %}
+                                        {{un_locataire.raisonsocial|upper}}
+                                    {% endif %}
+                                    
+                                </td>
+                                <td data-thead="Locative occupée">{{ un_locataire.id|occuplocataire }}</td>
+                                <td data-thead="Type">
+                                    {% if un_locataire.raisonsocial == '' %}
+                                        {% trans "PARTICULIER" %}
+                                    {% else %}
+                                        {% trans "ENTREPRISE" %}
+                                    {% endif %}
+                                </td>
+                                <td data-thead="Contact">{{ un_locataire.tel }}</td>
+                                <td data-thead="Rejoint">{{ un_locataire.creation|naturalday }}</td>
+                                <td data-thead="Statut">
+                                    {% if un_locataire.d1 == 1 %}
+                                        <span  style="cursor: pointer;" onclick="desUser('{{un_locataire.idpub}}');" class="success">Actif</span>
+                                    {% else %}
+                                        <span  style="cursor: pointer;" onclick="desUser('{{un_locataire.idpub}}');" class="danger">Inactif</span>
+                                    {% endif %}
+                                </td>
+                                <td data-thead="Actions">
+                                    <div class="action-btn">
+                                        <span onclick="showInfo('{{un_locataire.idpub}}');" class="bg-primary" data-toolpit="yes" toolpit-text="{% trans 'Plus de détails' %}">
+                                            <span class="material-icons-sharp">
+                                                visibility
+                                            </span>
+                                        </span>
+                                        <a href="{% url 'llocataire' un_locataire.idpub %}" class="bg-warning" data-toolpit="yes" toolpit-text="{% trans 'Modifier les informations' %}">
+                                            <span class="material-icons-sharp">
+                                                summarize
+                                            </span>
+                                        </a>
+                                        {% if 'PR' in request.user.username or 'LO' in request.user.username %}
+                                      
+                                        {% else %}
+                                            <a href="{% url 'elocataire' un_locataire.idpub %}" class="bg-info-dark" data-toolpit="yes" toolpit-text="{% trans 'Modifier les informations' %}">
+                                                <span class="material-icons-sharp">
+                                                    edit_note
+                                                </span>
+                                            </a>
+                                        {% endif %}
+                                    </div>
+                                </td>
+                            </tr>
+                            {% endif %}
+                            
+                            {% endfor %}
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+            <!--END TABLE-->
+        </main>
+{% endblock content %}    
+{% block js %}
+     
+<div class="modal lg-modal showmodal1" id="modal-hs">
+    <div class="content">
+        <div class="modal-header">
+            <div class="title">Locataire</div>
+            <div class="close" onclick="showModal('showmodal1');">
+                <span class="material-icons-sharp">
+                    close
+                </span>
+            </div>
+        </div>
+        <div class="modal-body">
+        </div>
+        <div class="modal-footer">
+            <div class="list-btn">
+                <button type="button" onclick="showModal('showmodal1');"  class="a-button" style="--clr:#e91919;">
+                    {% trans "Fermer" %}
+                </button>
+            </div>
+        </div>
+    </div>
+</div>
+   
+<div class="modal sm-modal showmodala" id="modal-hs">
+    <div class="content">
+        <div class="modal-header">
+            <div class="title">Locataire</div>
+            <div class="close" onclick="showModal('showmodala');">
+                <span class="material-icons-sharp">
+                    close
+                </span>
+            </div>
+        </div>
+        <div class="modal-body">
+        </div>
+        <div class="modal-footer">
+            <form action="{% url 'delLocataire' %}" method="GET" id="deleteU">
+                <input type="hidden" name="dellocataire" value="" id="dellocataire">
+                <div class="list-btn">
+                    <button type="button" onclick="showModal('showmodala');"  class="a-button" style="--clr:#e91919;">
+                        {% trans "Fermer" %}
+                    </button>
+                    <button type="submit" class="a-button" style="--clr:#7380ec;">
+                        {% trans "Confirmer" %}
+                    </button>
+                </div>
+            </form>
+        </div>
+    </div>
+</div>
+
+<script>
+    $("#deleteU").submit(function(e){
+        e.preventDefault();
+        swal({
+            title: "{% trans 'En cours' %} !",
+            text: "{% trans 'Veuillez ne pas quitter la page' %}",
+            type: "warning",
+            showCancelButton: false,
+            showConfirmButton : false,
+            confirmButtonColor: "#00BCD4",
+            confirmButtonText: "oK",
+            cancelButtonText: "No, cancel plx!",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        });
+        var formData = new FormData(this);
+        $.ajax({
+            type : "GET",
+            url: $(this).attr("action"),
+            data: formData,
+            dataType: 'json',
+            success: function(data) {                
+                if (data.etat == "2") {
+                    var textreturn = "{% trans 'Opération non effectuée' %}";
+                    swal({
+                        title: "{% trans 'Erreur' %} !",
+                        text: textreturn,
+                        type: "error",
+                        showCancelButton: false,
+                        confirmButtonColor: "#7380ec",
+                        confirmButtonText: "oK",
+                        cancelButtonText: "No, cancel plx!",
+                        closeOnConfirm: true,
+                        closeOnCancel: true
+                    });
+                }else{
+                    
+                    var textreturn = "{% trans 'Opération effectuée' %}";
+                    swal({
+                        title: "{% trans 'Succès' %} !",
+                        text: textreturn,
+                        type: "success",
+                        showCancelButton: false,
+                        confirmButtonColor: "#7380ec",
+                        confirmButtonText: "oK",
+                        cancelButtonText: "No, cancel plx!",
+                        closeOnConfirm: true,
+                        closeOnCancel: false
+                    }, function (isConfirm) {
+                        if (isConfirm) {
+                            location.reload();
+                        }
+                    });
+                }
+                
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        });
+    });
+</script>
+<script>
+    $(document).ready(function () {
+        $('#table_id').DataTable();
+    });
+</script>
+
+<script>
+    function showInfo(pk){
+        $.ajax({
+            url: "{% url 'infoLocataire' %}",
+            data: {
+                'id': pk
+            },
+            dataType: 'json',
+            success: function(data) {
+                if (data) {
+                    $('.modal-body').html(data.un_locataire);
+                    showModal('showmodal1');
+                }
+            }
+        });
+    }
+</script>
+
+<script>
+    function desUser(pk){
+        $('#dellocataire').val(pk);
+        $.ajax({
+            url: "{% url 'desLocataire' %}",
+            data: {
+                'id': pk
+            },
+            dataType: 'json',
+            success: function(data) {
+                if (data) {
+                    $('.modal-body').html(data.text);
+                    showModal('showmodala');
+                }
+            }
+        });
+    }
+</script>
+{% endblock js %}

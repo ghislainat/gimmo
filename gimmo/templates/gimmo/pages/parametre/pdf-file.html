@@ -1,0 +1,147 @@
+<!DOCTYPE html>{% load static%} {% load i18n %}
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <title>{{ filenom }}</title>
+    
+    <style>
+        @page {
+            size: a4 portrait;
+        }
+
+        #invoice-POS {
+            box-shadow: 0 0 1in -0.25in rgba(0, 0, 0, 0.5);
+            padding: 2mm;
+            margin: 0 auto;
+            width: 88mm;
+            background: #FFF;
+        }
+        
+        #top,
+        #mid,
+        #botk {
+            /* Targets all id with 'col-' */
+            border-bottom: 1px solid #EEE;
+        }
+        
+        #top {
+            min-height: 100px;
+        }
+        
+        #mid {
+            min-height: 80px;
+        }
+        
+        #bot {
+            min-height: 50px;
+        }
+    </style>
+</head>
+
+<body>
+    <div id="invoice-POS">
+        <div id="top">
+            <table>
+                <tr style="border: 1px solid transparent;">
+                    <td align="center" colspan="4" style="border: none;">
+                        <div class="">
+                            <img style="width:100px;height:100px;border-radius:50%;" src="{{ etablissement.logo.path }}"><br/><br/>
+                            <span style="font-size: 30px;color:black;font-weight:bold;font-style:italic;">{{ etablissement.raisonsocial }}</span><br/>
+                            <span>{% trans 'Adresse' %} : {{ etablissement.adresse }}</span><br/>
+                            <span>(00228) {{ etablissement.tel }} / {{ etablissement.telfixe }} / {{ etablissement.email }}</span>
+                        </div>
+                    </td>
+                </tr>
+            </table>
+        </div>
+        <div id="mid">
+            <div style="text-align: center;">
+                <table border="0">
+                    <tr style="border: none;">
+                        <td style="border: none;">
+
+                        </td>
+                    </tr>
+                </table>
+            </div>
+            <table cellpadding="5">
+                <thead>
+                    <tr style="width: 100%;background-color:#fff;">
+                        <td colspan="4" style="border-left:none;border-right:none;text-align:center;font-size:14px;font-weight:bold;">LISTE DES BIENS</td>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr style="width: 100%;background-color:#eee;">
+                        <td style="border-left:none;border-right:none;">#</td>
+                        <td style="border-left:none;border-right:none;">Désignation</td>
+                        <td style="border-left:none;border-right:none;">Type</td>
+                        <td style="border-left:none;border-right:none;">Etat</td>
+                        <td style="border-left:none;border-right:none;">Valeur</td>
+                        <td style="border-left:none;border-right:none;">Propriétaire</td>
+                    </tr>
+                    {% for un_bien in liste_bien %}
+
+                    <tr>
+                        <td style="border-left:none;border-right:none;">{{ forloop.counter }}</td>
+                        <td style="border-left:none;border-right:none;">{{un_bien.nom}}</td>
+                        <td style="border-left:none;border-right:none;">
+                            {% if un_bien.typebien == 1 %}
+                                {% trans "Immeuble" %}
+                            {% elif un_bien.typebien == 2 %}
+                                {% trans "Maison basse" %}
+                            {% elif un_bien.typebien == 3 %}
+                                {% trans "Duplex" %}
+                            {% elif un_bien.typebien == 4 %}
+                                {% trans "Villa" %}
+                            {% elif un_bien.typebien == 5 %}
+                                {% trans "Appartement" %}
+                            {% elif un_bien.typebien == 6 %}
+                                {% trans "Terrain" %}
+                            {% else %}
+                                {% trans "Autre" %}
+                            {% endif %}
+                        </td>
+                        <td style="border-left:none;border-right:none;">
+                            {% if un_bien.vente == 1 %}
+                                {% trans "En vente" %}
+                            {% else %}
+                                {% trans "En location" %}
+                            {% endif %}
+                          
+                        </td>
+                        <td style="border-left:none;border-right:none;">{{un_bien.valeur}}</td>
+                        <td style="border-left:none;border-right:none;">{{un_bien.proprietaire.nom|upper}} {{un_bien.proprietaire.prenom}}</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+                <tfoot>
+                    <tr style="width: 100%;background-color:#eee;">
+                        <td style="border-left:none;border-right:none;" align="left">{% trans 'TOTAL HT' %}</td>
+                        <td style="border-left:none;border-right:none;" colspan="3" align="right">{{ facture.totred }}</td>
+                    </tr>
+                    <tr style="width: 100%;background-color:#eee;">
+                        <td style="border-left:none;border-right:none;" align="left">{% trans 'TTC EN LETTRE' %}</td>
+                        <td style="border-left:none;border-right:none;" colspan="3" align="right">{{ totlettre }} {{ etab.devise }}</td>
+                    </tr>
+                    <tr style="border: 1px solid transparent;">
+                        <td colspan="4" style="border: none;">
+
+                        </td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+        <div id="bot">
+            <div style="text-align: center;">
+                <span style="text-align: center;font-size:11px;">Fait le : {{today}} par {{ action }}</span><br/>
+                <span style="text-align: center;font-size:11px;">by <a href="https://tech-agence.net">TECH-AGENCE</a></span>
+            </div>
+        </div>
+        <!--End InvoiceBot-->
+    </div>
+    <!--End Invoice-->
+
+</body>
+
+</html>

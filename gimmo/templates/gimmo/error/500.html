@@ -1,0 +1,29 @@
+{% extends 'gimmo/base.html' %}{% load i18n %}{% load static %}
+{% block css %}
+<link rel="stylesheet" href="{% static '/gimmo/css/modal.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/form.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/responsivebox.css' %}">
+{% endblock css %}
+{% block title %}{% trans "ERREUR 500" %}{% endblock title %}
+{% block content %}
+        <main>
+            <div style="display: flex;flex-direction: column;justify-content: center;align-items: center;position: relative;top: 10%;margin-bottom: 10%;">
+                <span>
+                    <h1>Erreur serveur</h1>
+                </span>
+                <span>
+                    <img src="{% static '/gimmo/images/cin.svg' %}" class="imafge" alt="" style="height: 400px;" />
+                </span>
+                <div class="list-btn">
+                    <a href="{% url 'newlocataire' %}" class="a-button" style="--clr:#7380ec;">
+                        <span class="material-icons-sharp">
+                            undo
+                        </span>
+                        {% trans "Retour à la page d'accueil" %}
+                    </a>
+                </div>
+            </div>
+        </main>
+{% endblock content %}    
+{% block js %}
+{% endblock js %}

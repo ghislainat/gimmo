@@ -1,0 +1,270 @@
+{% extends 'gimmo/base.html' %}{% load i18n %} {% load static %} {% load ghis %}
+{% block css %}
+<link rel="stylesheet" href="{% static '/gimmo/css/modal.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/form.css' %}">
+<link rel="stylesheet" href="{% static '/gimmo/css/responsivebox.css' %}">
+{% endblock css %}
+{% block title %}{% trans "EDITER DEPENSE" %}{% endblock title %}
+{% block content %}
+<main>
+    <h1>{% trans "Editer dépense" %} {{ une_depense.description}}</h1>
+
+    <div class="list-btn">
+        <a href="{% url 'depense' %}" class="a-button" style="--clr:#7380ec;">
+            <span class="material-icons-sharp">
+                reply
+            </span>
+            {% trans "Retour liste des dépense" %}
+        </a>
+    </div>
+    <!--CARD-->
+    <!--END CARD-->
+    <!--TABLE-->
+    <div class="main-body">
+        <form action="{% url 'eajxdepense' %}" method="post" id="newform" enctype="multipart/form-data">
+            {% csrf_token %}
+            <div class="l-card">
+                <div class="card lg-c12 md-c12 sm-c12 xs-c12">
+                    <div class="card-header">
+                        <h2>
+                            {% trans "Information" %}
+                        </h2>
+                    </div>
+                    <div class="card-body">
+                        <div class="row">
+                           
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="number" class="input_field" name="valeur" id="input_feild" value="{{une_depense.valeur|strtoint}}" placeholder=" " required>
+                                    <label for="input_feild" class="input_label">{% trans "Valeur" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+    
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="input_div">
+                                    <input type="text" class="input_field" value="{{une_depense.description}}" name="description" id="input_feild" placeholder=" " required>
+                                    <label for="input_feild" class="input_label">{% trans "Description" %} <span class="required-txt" style="color: red;">*</span></label>
+                                </div>
+                            </div>
+
+                            <div class="lg-c12 md-c12 sm-c12 xs-c12">
+                                <h3>Appartenance de la dépense</h3><br>
+                            </div>
+
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="select_div">
+                                    <div class="select_label">{% trans "Propriétaire" %} <span class="required-txt" style="color: red;">*</span></div>
+                                    <select name="proprietaire" id="proprietaire" class="select_field" required>
+                                        <option value="{{ une_depense.proprietaire.id }}">{{une_depense.proprietaire.nom|upper}} {{ une_depense.proprietaire.prenom }}</option>
+                                        <option></option>
+                                        {% for un_proprietaire in liste_proprietaire %}
+                                          <option value="{{un_proprietaire.id}}">{{un_proprietaire.nom|upper}} {{ un_proprietaire.prenom }}</option>
+                                        {% endfor %}
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="select_div">
+                                    <div class="select_label">{% trans "Bien" %} <span class="required-txt" style="color: red;">*</span></div>
+                                    <select name="bien" id="bien" class="select_field" required>
+                                        <option value="{{ une_depense.bien.id }}">{{ une_depense.bien.nom }}</option>
+                                        <option class="after"></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <div class="lg-c4 md-c6 sm-c6 xs-c12">
+                                <div class="select_div">
+                                    <div class="select_label">{% trans "Locative" %}</div>
+                                    <select name="locative" id="locative" class="select_field">
+                                        
+                                        {% if une_depense.locative != 0 %}
+                                            <option value="{{ une_depense.locative }}">{{ une_depense.locative|getlocative }}</option>
+                                        {% endif %}
+                                        <option class="afterr"></option>
+                                    </select>
+                                </div>
+                            </div>
+                            <input type="hidden" name="idpub" value="{{une_depense.idpub}}">
+                        </div>
+                        <div class="list-btn">
+                            <button type="submit" class="a-button" style="--clr:#7380ec;">
+                                {% trans "Enrégistrer" %}
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </div>
+
+    <!--END TABLE-->
+</main>
+{% endblock content %}
+{% block js %}
+<script>
+    $(document).ready(function () {
+        $('#table_id').DataTable();
+    });
+</script>
+<script>
+    $("#newform").submit(function(e){
+        e.preventDefault();
+        swal({
+            title: "{% trans 'En cours' %} !",
+            text: "{% trans 'Veuillez ne pas quitter la page' %}",
+            type: "warning",
+            showCancelButton: false,
+            showConfirmButton : false,
+            confirmButtonColor: "#00BCD4",
+            confirmButtonText: "oK",
+            cancelButtonText: "No, cancel plx!",
+            closeOnConfirm: false,
+            closeOnCancel: false
+        });
+        var formData = new FormData(this);
+        $.ajax({
+            type : "POST",
+            url: $(this).attr("action"),
+            data: formData,
+            dataType: 'json',
+            success: function(data) {                
+                if (data.etat == "2") {
+                    var textreturn = "{% trans 'Dépense non éditée' %}";
+                    swal({
+                        title: "{% trans 'Erreur' %} !",
+                        text: textreturn,
+                        type: "error",
+                        showCancelButton: false,
+                        confirmButtonColor: "#7380ec",
+                        confirmButtonText: "oK",
+                        cancelButtonText: "No, cancel plx!",
+                        closeOnConfirm: true,
+                        closeOnCancel: true
+                    });
+                }else{
+                    
+                    var textreturn = "{% trans 'Dépense éditée' %}";
+                    swal({
+                        title: "{% trans 'Succès' %} !",
+                        text: textreturn,
+                        type: "success",
+                        showCancelButton: false,
+                        confirmButtonColor: "#7380ec",
+                        confirmButtonText: "oK",
+                        cancelButtonText: "No, cancel plx!",
+                        closeOnConfirm: true,
+                        closeOnCancel: false
+                    }, function (isConfirm) {
+                        if (isConfirm) {
+                            location.reload();
+                        }
+                    });
+                }
+                
+            },
+            cache: false,
+            contentType: false,
+            processData: false
+        });
+    });
+</script>
+
+<script>
+    $(document).ready(function () {
+            $("#sscatone").hide();
+            $("#sscattwo").hide();
+            $("#proprietaire").on('change', function () {
+                var $this = $(this);
+                if ($this.val() != '') {
+                    $("#bien").find('.after').nextAll().remove();
+                    $("#valeurlocative").val('0');
+                    $.ajax({
+                        url: "{% url 'bienproprietaire' %}",
+                        data: {
+                            'id': $(this).val()
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.textdisplay == 0) {
+                                $("#bien").find('.after').nextAll().remove();
+                                $("#locative").val("");
+                            } else {
+                                $("#bien").find('.after').nextAll().remove();
+                                let options = '';
+                                data.listebien.forEach(bien => {
+                                    options += '<option value=' + bien.id + '>' + bien.nom + '</option>';
+                                });
+
+                                $("#locative").val("");
+                                $("#bien").find('.after').after(options);
+                            }
+
+                        },
+                        error: function (data) {
+                            console.log('Something went wrong');
+                        }
+                    });
+                } else {
+                    $("#bien").find('.after').nextAll().remove();
+                }
+            });
+
+            $("#bien").on('change', function () {
+                var $this = $(this);
+                if ($this.val() != '') {
+                    $("#locative").find('.after').nextAll().remove();
+                    $("#valeurlocative").val('0');
+                    $.ajax({
+                        url: "{% url 'locativeproprietaire' %}",
+                        data: {
+                            'id': $(this).val()
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data.textdisplay == 0) {
+                                $("#locative").find('.afterr').nextAll().remove();
+                            } else {
+                                $("#locative").find('.afterr').nextAll().remove();
+                                let options = '';
+                                data.listelocative.forEach(locative => {
+                                    options += '<option value=' + locative.id + '>' + locative.reflocative +'</option>';
+                                });
+                                $("#locative").find('.afterr').after(options);
+                            }
+
+                        },
+                        error: function (data) {
+                            console.log('Something went wrong');
+                        }
+                    });
+                } else {
+                    $("#locative").find('.after').nextAll().remove();
+                }
+            });
+
+            $("#locative").on('change', function () {
+                var $this = $(this);
+                if ($this.val() != '') {
+                    $.ajax({
+                        url: "{% url 'selectedlocative' %}",
+                        data: {
+                            'id': $(this).val()
+                        },
+                        dataType: 'json',
+                        success: function (data) {
+                            if (data) {
+                                $("#valeurlocative").val(data.montant);
+                            }
+
+                        },
+                        error: function (data) {
+                            console.log('Something went wrong');
+                        }
+                    });
+                } else {
+                    $("#valeurlocative").val('0');
+                }
+            });
+        });
+ </script>
+{% endblock js %}
